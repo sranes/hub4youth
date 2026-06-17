@@ -93,7 +93,7 @@
   --card-foreground: oklch(14.5% 0 0deg);
   --popover: oklch(100% 0 0deg);
   --popover-foreground: oklch(14.5% 0 0deg);
-  --primary: oklch(49% 0.17 286deg);
+  --primary: oklch(58% 0.1 195deg);
   --primary-foreground: oklch(98.5% 0 0deg);
   --secondary: oklch(97% 0 0deg);
   --secondary-foreground: oklch(20.5% 0 0deg);
@@ -132,7 +132,7 @@
   --card-foreground: oklch(98.5% 0 0deg);
   --popover: oklch(14.5% 0 0deg);
   --popover-foreground: oklch(98.5% 0 0deg);
-  --primary: oklch(62% 0.17 286deg);
+  --primary: oklch(70% 0.11 195deg);
   --primary-foreground: oklch(98.5% 0 0deg);
   --secondary: oklch(26.9% 0 0deg);
   --secondary-foreground: oklch(98.5% 0 0deg);
@@ -161,6 +161,57 @@
   --success: oklch(28% 0.1 200deg);
   --warning: oklch(35% 0.08 70deg);
   --error: oklch(45% 0.1 25deg);
+}
+
+/* ===== Selectable brand themes =====
+   The active theme is set on <html data-brand="..."> from NEXT_PUBLIC_BRAND_THEME.
+   Each theme only re-tints the brand accent (--primary + focus --ring); the rest
+   of the palette is shared. Default (no data-brand) is the balanced teal above.
+   Light values first, then a lighter variant for dark mode. */
+
+/* Forest & Sky — balanced teal (default) */
+[data-brand='teal'] {
+  --primary: oklch(58% 0.1 195deg);
+  --ring: oklch(58% 0.1 195deg);
+}
+[data-theme='dark'][data-brand='teal'] {
+  --primary: oklch(70% 0.11 195deg);
+}
+
+/* Emerald — green-led */
+[data-brand='emerald'] {
+  --primary: oklch(60% 0.14 155deg);
+  --ring: oklch(60% 0.14 155deg);
+}
+[data-theme='dark'][data-brand='emerald'] {
+  --primary: oklch(70% 0.14 155deg);
+}
+
+/* Azure — blue-led */
+[data-brand='azure'] {
+  --primary: oklch(56% 0.15 245deg);
+  --ring: oklch(56% 0.15 245deg);
+}
+[data-theme='dark'][data-brand='azure'] {
+  --primary: oklch(66% 0.15 245deg);
+}
+
+/* Indigo AI — deep techy blue-violet */
+[data-brand='indigo'] {
+  --primary: oklch(52% 0.16 270deg);
+  --ring: oklch(52% 0.16 270deg);
+}
+[data-theme='dark'][data-brand='indigo'] {
+  --primary: oklch(64% 0.16 270deg);
+}
+
+/* Sunrise — warm amber accent */
+[data-brand='amber'] {
+  --primary: oklch(62% 0.15 55deg);
+  --ring: oklch(62% 0.15 55deg);
+}
+[data-theme='dark'][data-brand='amber'] {
+  --primary: oklch(72% 0.14 65deg);
 }
 
 @theme inline {

@@ -1,20 +1,22 @@
 import Link from 'next/link'
-import { GraduationCap } from 'lucide-react'
 import React from 'react'
+
+import { BrandMark } from '@/components/site/BrandMark'
 
 export const SiteFooter: React.FC = () => {
   return (
     <footer className="mt-auto border-t border-border">
       <div className="container grid gap-8 py-12 sm:grid-cols-2 lg:grid-cols-4">
         <div>
-          <Link href="/" className="flex items-center gap-2 font-medium">
-            <span className="flex size-7 items-center justify-center rounded-md bg-primary text-primary-foreground">
-              <GraduationCap className="size-4" />
+          <Link href="/" className="flex items-center gap-2 text-lg font-medium">
+            <BrandMark className="size-8" />
+            <span>
+              hub4youth<span className="text-primary">.ai</span>
             </span>
-            hub4youth
           </Link>
           <p className="mt-3 max-w-xs text-sm text-muted-foreground">
-            Industry-ready online IT courses for students and working professionals.
+            Empowering the next generation through AI — industry-ready online IT courses for
+            students and working professionals.
           </p>
         </div>
 

@@ -1,10 +1,11 @@
 'use client'
 
 import Link from 'next/link'
-import { GraduationCap, Menu, X } from 'lucide-react'
+import { Menu, X } from 'lucide-react'
 import React, { useState } from 'react'
 
 import { Button } from '@/components/ui/button'
+import { BrandMark } from '@/components/site/BrandMark'
 
 const NAV = [
   { label: 'Courses', href: '/courses' },
@@ -19,11 +20,11 @@ export const SiteHeader: React.FC = () => {
   return (
     <header className="sticky top-0 z-50 border-b border-border bg-background/90 backdrop-blur">
       <div className="container flex h-16 items-center justify-between">
-        <Link href="/" className="flex items-center gap-2 font-medium">
-          <span className="flex size-7 items-center justify-center rounded-md bg-primary text-primary-foreground">
-            <GraduationCap className="size-4" />
+        <Link href="/" className="flex items-center gap-2 text-lg font-medium">
+          <BrandMark className="size-8" />
+          <span>
+            hub4youth<span className="text-primary">.ai</span>
           </span>
-          hub4youth
         </Link>
 
         <nav className="hidden items-center gap-7 md:flex">
