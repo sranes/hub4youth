@@ -28,6 +28,11 @@ flips the app from SQLite to Postgres).
 The schema is created automatically on first boot (`push` is enabled). For stricter
 control later, set `PAYLOAD_DB_PUSH=false` and use `npx payload migrate`.
 
+> **"self-signed certificate in certificate chain" on deploy?** That's the Postgres
+> TLS handshake. The app already keeps TLS on but skips strict chain verification,
+> which resolves it for Neon/Supabase/RDS. If you've supplied the provider's CA to
+> Node and want strict verification, set `DATABASE_SSL_STRICT=true`.
+
 ## 4. Provision Vercel Blob (media uploads)
 
 In **Storage**, add **Blob**. This sets `BLOB_READ_WRITE_TOKEN`. With it present, all

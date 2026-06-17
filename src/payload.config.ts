@@ -75,7 +75,14 @@ export default buildConfig({
   // Postgres in production (DATABASE_URL starts with postgres://), SQLite locally.
   db: (process.env.DATABASE_URL || '').startsWith('postgres')
     ? postgresAdapter({
-        pool: { connectionString: process.env.DATABASE_URL },
+        pool: {
+          connectionString: process.env.DATABASE_URL,
+          // Managed Postgres (Neon/Supabase/Vercel/RDS) often presents a cert
+          // chain Node won't verify, causing "self-signed certificate in
+          // certificate chain". Keep TLS on but skip chain verification unless
+          // DATABASE_SSL_STRICT=true (set that once you supply the provider CA).
+          ssl: process.env.DATABASE_SSL_STRICT === 'true' ? true : { rejectUnauthorized: false },
+        },
         // Auto-sync the schema on deploy (simplest path for this app's scale).
         // Set PAYLOAD_DB_PUSH=false and use `payload migrate` for stricter control.
         push: process.env.PAYLOAD_DB_PUSH !== 'false',
