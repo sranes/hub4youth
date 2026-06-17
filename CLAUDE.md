@@ -10,7 +10,7 @@ hub4youth is a marketing + lead-generation website for online IT courses, aimed 
 
 ```bash
 npm run dev               # Start Next.js dev server (http://localhost:3000, admin at /admin)
-npm run build             # Production build (runs payload build + next-sitemap)
+npm run build             # Production build (next build + next-sitemap)
 npm run generate:types    # Regenerate src/payload-types.ts from the Payload config
 npm run generate:importmap# Regenerate the admin import map (src/app/(payload)/admin/importMap.js)
 npm run lint              # ESLint
@@ -20,7 +20,7 @@ npm run test:e2e          # Playwright e2e tests (single test: npx playwright te
 npx tsx scripts/seed.ts   # Seed admin user + sample courses (see Seeding gotchas below)
 ```
 
-There is no `vercel.json`/`vercel.ts` yet and the project is not git-initialized.
+The project is git-initialized on `main`. There is no `vercel.json`/`vercel.ts` — Vercel auto-detects the Next.js app. See `DEPLOYMENT.md` for the full deploy runbook.
 
 ## Critical workflows
 
@@ -33,7 +33,7 @@ There is no `vercel.json`/`vercel.ts` yet and the project is not git-initialized
 - **Single app, two route groups** under `src/app/`:
   - `(frontend)` — the public marketing site. The root layout swaps the template's CMS-driven Header/Footer for branded `SiteHeader`/`SiteFooter` (`src/components/site/`).
   - `(payload)` — the admin panel (`/admin`) and Payload REST/GraphQL API (`/api`). Do not hand-edit `importMap.js`; regenerate it.
-- **Payload config**: `src/payload.config.ts` registers collections, globals, plugins, and the DB adapter. Database is **SQLite locally** (`@payloadcms/db-sqlite`, file at `./hub4youth.db`); switch to Postgres for production.
+- **Payload config**: `src/payload.config.ts` registers collections, globals, plugins, and the DB adapter. The **DB adapter is env-driven**: Postgres (`@payloadcms/db-postgres`) when `DATABASE_URL` starts with `postgres`, otherwise SQLite (`@payloadcms/db-sqlite`, file at `./hub4youth.db`) for local dev. Postgres `push` is on by default (toggle with `PAYLOAD_DB_PUSH=false`). **Media storage** is also env-driven: Vercel Blob when `BLOB_READ_WRITE_TOKEN` is set, otherwise local `public/media`. **Vercel Analytics + Speed Insights** are mounted in the frontend layout (no-op off-Vercel).
 - **Collections** (`src/collections/`):
   - `Courses` — the core content type. Tabs for Overview (richtext), Curriculum (modules → lessons array, outcomes), and SEO. Sidebar holds price/currency/duration/level/mode/icon/`featured`/categories. `featured: true` surfaces a course on the homepage. Has draft/autosave versions and revalidate hooks.
   - `Enquiries` — contact/enquiry submissions. `create` access is `() => false`; rows are inserted only server-side via the contact server action with `overrideAccess: true`. Admin staff read/manage leads here.
