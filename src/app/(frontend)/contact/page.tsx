@@ -35,8 +35,8 @@ export default async function ContactPage({ searchParams }: Args) {
             <ul className="mt-4 space-y-4 text-sm">
               <li className="flex items-start gap-3">
                 <Mail className="mt-0.5 size-4 shrink-0 text-primary" />
-                <a href="mailto:hello@hub4youth.com" className="hover:text-primary">
-                  hello@hub4youth.com
+                <a href="mailto:hello@hub4youth.ai" className="hover:text-primary">
+                  hello@hub4youth.ai
                 </a>
               </li>
               <li className="flex items-start gap-3">

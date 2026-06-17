@@ -46,16 +46,19 @@ async function getFeaturedCourses(): Promise<Course[]> {
 const WHY = [
   {
     icon: Users,
+    accent: '#2B7FD4',
     title: 'Live, mentor-led classes',
     body: 'Learn from working professionals in real time — ask questions, get unblocked, stay accountable.',
   },
   {
     icon: BriefcaseBusiness,
+    accent: '#27AE60',
     title: 'Job-ready projects',
     body: 'Build a portfolio of real projects that demonstrates your skills to employers.',
   },
   {
     icon: Award,
+    accent: '#E0992B',
     title: 'Recognised certification',
     body: 'Earn a shareable certificate you can add to your LinkedIn and résumé.',
   },
@@ -139,10 +142,22 @@ export default async function HomePage() {
       <section id="why" className="border-y border-border bg-card">
         <div className="container py-16 lg:py-20">
           <h2 className="text-2xl font-medium sm:text-3xl">Why hub4youth</h2>
-          <div className="mt-8 grid gap-8 sm:grid-cols-3">
-            {WHY.map(({ icon: Icon, title, body }) => (
-              <div key={title}>
-                <div className="flex size-11 items-center justify-center rounded-lg bg-primary/10 text-primary">
+          <div className="mt-8 grid gap-5 sm:grid-cols-3">
+            {WHY.map(({ icon: Icon, accent, title, body }) => (
+              <div
+                key={title}
+                className="rounded-xl border border-border p-6"
+                style={{
+                  backgroundColor: `color-mix(in srgb, var(--card) 87%, ${accent} 13%)`,
+                }}
+              >
+                <div
+                  className="flex size-11 items-center justify-center rounded-lg"
+                  style={{
+                    backgroundColor: `color-mix(in srgb, var(--card) 76%, ${accent} 24%)`,
+                    color: accent,
+                  }}
+                >
                   <Icon className="size-5" />
                 </div>
                 <h3 className="mt-4 text-lg font-medium">{title}</h3>

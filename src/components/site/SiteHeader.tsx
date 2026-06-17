@@ -6,10 +6,11 @@ import React, { useState } from 'react'
 
 import { Button } from '@/components/ui/button'
 import { BrandMark } from '@/components/site/BrandMark'
+import { ThemeToggle } from '@/components/site/ThemeToggle'
 
 const NAV = [
   { label: 'Courses', href: '/courses' },
-  { label: 'About', href: '/#about' },
+  { label: 'About', href: '/about' },
   { label: 'Why us', href: '/#why' },
   { label: 'Contact', href: '/contact' },
 ]
@@ -39,19 +40,23 @@ export const SiteHeader: React.FC = () => {
           ))}
         </nav>
 
-        <div className="hidden md:block">
-          <Button asChild size="sm">
-            <Link href="/courses">Enroll now</Link>
-          </Button>
-        </div>
+        <div className="flex items-center gap-1">
+          <ThemeToggle />
 
-        <button
-          className="md:hidden"
-          aria-label={open ? 'Close menu' : 'Open menu'}
-          onClick={() => setOpen((v) => !v)}
-        >
-          {open ? <X className="size-6" /> : <Menu className="size-6" />}
-        </button>
+          <div className="hidden md:block">
+            <Button asChild size="sm">
+              <Link href="/courses">Enroll now</Link>
+            </Button>
+          </div>
+
+          <button
+            className="inline-flex size-9 items-center justify-center md:hidden"
+            aria-label={open ? 'Close menu' : 'Open menu'}
+            onClick={() => setOpen((v) => !v)}
+          >
+            {open ? <X className="size-6" /> : <Menu className="size-6" />}
+          </button>
+        </div>
       </div>
 
       {open && (

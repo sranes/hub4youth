@@ -68,7 +68,7 @@ export default buildConfig({
   email: process.env.RESEND_API_KEY
     ? resendAdapter({
         apiKey: process.env.RESEND_API_KEY,
-        defaultFromAddress: process.env.EMAIL_FROM || 'hello@hub4youth.com',
+        defaultFromAddress: process.env.EMAIL_FROM || 'hello@hub4youth.ai',
         defaultFromName: process.env.EMAIL_FROM_NAME || 'hub4youth',
       })
     : undefined,

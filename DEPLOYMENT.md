@@ -41,7 +41,7 @@ Preview if you want). See `.env.example` for the full list.
 Required:
 - `DATABASE_URL` — the Postgres string from step 3
 - `PAYLOAD_SECRET` — a long random string (e.g. `openssl rand -hex 32`)
-- `NEXT_PUBLIC_SERVER_URL` — your production URL, e.g. `https://hub4youth.com` (no trailing slash)
+- `NEXT_PUBLIC_SERVER_URL` — your production URL, e.g. `https://hub4youth.ai` (no trailing slash)
 - `BLOB_READ_WRITE_TOKEN` — from step 4
 - `CRON_SECRET`, `PREVIEW_SECRET` — random strings
 

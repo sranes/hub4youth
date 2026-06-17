@@ -45,7 +45,7 @@ export const SiteFooter: React.FC = () => {
           <h4 className="text-sm font-medium">Company</h4>
           <ul className="mt-3 space-y-2 text-sm text-muted-foreground">
             <li>
-              <Link href="/#about" className="hover:text-foreground">
+              <Link href="/about" className="hover:text-foreground">
                 About
               </Link>
             </li>
@@ -61,8 +61,8 @@ export const SiteFooter: React.FC = () => {
           <h4 className="text-sm font-medium">Get in touch</h4>
           <ul className="mt-3 space-y-2 text-sm text-muted-foreground">
             <li>
-              <a href="mailto:hello@hub4youth.com" className="hover:text-foreground">
-                hello@hub4youth.com
+              <a href="mailto:hello@hub4youth.ai" className="hover:text-foreground">
+                hello@hub4youth.ai
               </a>
             </li>
           </ul>
