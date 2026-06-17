@@ -10,7 +10,7 @@ hub4youth is a marketing + lead-generation website for online IT courses, aimed 
 
 ```bash
 npm run dev               # Start Next.js dev server (http://localhost:3000, admin at /admin)
-npm run build             # Production build (next build + next-sitemap)
+npm run build             # Production build: runs migrations (if Postgres) + next build --webpack + sitemap
 npm run generate:types    # Regenerate src/payload-types.ts from the Payload config
 npm run generate:importmap# Regenerate the admin import map (src/app/(payload)/admin/importMap.js)
 npm run lint              # ESLint
@@ -21,6 +21,8 @@ npx tsx scripts/seed.ts   # Seed admin user + sample courses (see Seeding gotcha
 ```
 
 The project is git-initialized on `main`. There is no `vercel.json`/`vercel.ts` — Vercel auto-detects the Next.js app. See `DEPLOYMENT.md` for the full deploy runbook.
+
+**Build uses webpack, not Turbopack** (`next build --webpack`). Next 16 defaults `build` to Turbopack, under which the Payload admin renders as a blank page in production (the marketing pages are fine). Dev still uses Turbopack. Do not drop the `--webpack` flag.
 
 ## Critical workflows
 
