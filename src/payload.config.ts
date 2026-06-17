@@ -123,16 +123,15 @@ export default buildConfig({
   plugins: [
     ...plugins,
     // On Vercel the filesystem is ephemeral, so media must go to Blob storage.
-    // Enabled only when a token is present; locally, uploads use the public dir.
-    ...(process.env.BLOB_READ_WRITE_TOKEN
-      ? [
-          vercelBlobStorage({
-            enabled: true,
-            collections: { media: true },
-            token: process.env.BLOB_READ_WRITE_TOKEN,
-          }),
-        ]
-      : []),
+    // The plugin is always registered (so its admin component stays in the import
+    // map across all environments — otherwise regenerating the import map without
+    // the token would strip it and blank the admin). It only *activates* when
+    // BLOB_READ_WRITE_TOKEN is set; locally it's disabled and uploads use the disk.
+    vercelBlobStorage({
+      enabled: Boolean(process.env.BLOB_READ_WRITE_TOKEN),
+      collections: { media: true },
+      token: process.env.BLOB_READ_WRITE_TOKEN,
+    }),
   ],
   secret: process.env.PAYLOAD_SECRET,
   sharp,
