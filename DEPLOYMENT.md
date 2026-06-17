@@ -25,8 +25,12 @@ In your Vercel project → **Storage → Marketplace**, add a Postgres provider
 `DATABASE_URL` (it must start with `postgres://` or `postgresql://` — that's what
 flips the app from SQLite to Postgres).
 
-The schema is created automatically on first boot (`push` is enabled). For stricter
-control later, set `PAYLOAD_DB_PUSH=false` and use `npx payload migrate`.
+The schema is created by **migrations** at build time: the `build` script runs
+`scripts/predeploy.mjs`, which runs `payload migrate` whenever `DATABASE_URL` is
+Postgres (i.e. on Vercel) before `next build`. Migration files live in
+`src/migrations`. After changing collections/fields, regenerate with
+`npx payload migrate:create <name>` (works offline) and commit the result.
+(Local dev uses SQLite + automatic dev "push", so it skips this step.)
 
 > **"self-signed certificate in certificate chain" on deploy?** That's the Postgres
 > TLS handshake. The app already keeps TLS on but skips strict chain verification,
