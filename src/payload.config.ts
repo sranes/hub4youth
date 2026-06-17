@@ -24,6 +24,24 @@ import { getServerSideURL } from './utilities/getURL'
 const filename = fileURLToPath(import.meta.url)
 const dirname = path.dirname(filename)
 
+// pg parses `sslmode`/`ssl` params out of the connection string, and those
+// override the explicit `ssl` option on the pool — which re-enables strict chain
+// verification and causes SELF_SIGNED_CERT_IN_CHAIN with managed providers
+// (Neon/Supabase/etc.). Strip them so our `ssl` setting below is authoritative.
+const pgConnectionString = (): string | undefined => {
+  const raw = process.env.DATABASE_URL
+  if (!raw) return raw
+  try {
+    const url = new URL(raw)
+    url.searchParams.delete('sslmode')
+    url.searchParams.delete('ssl')
+    url.searchParams.delete('channel_binding')
+    return url.toString()
+  } catch {
+    return raw
+  }
+}
+
 export default buildConfig({
   admin: {
     components: {
@@ -76,7 +94,7 @@ export default buildConfig({
   db: (process.env.DATABASE_URL || '').startsWith('postgres')
     ? postgresAdapter({
         pool: {
-          connectionString: process.env.DATABASE_URL,
+          connectionString: pgConnectionString(),
           // Managed Postgres (Neon/Supabase/Vercel/RDS) often presents a cert
           // chain Node won't verify, causing "self-signed certificate in
           // certificate chain". Keep TLS on but skip chain verification unless
