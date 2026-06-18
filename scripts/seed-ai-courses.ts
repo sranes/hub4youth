@@ -482,6 +482,20 @@ const aiFundamentals = {
 
 /* ---------- Seeder ---------- */
 const run = async () => {
+  const dbUrl = process.env.DATABASE_URL || ''
+  const isPostgres = dbUrl.startsWith('postgres')
+  console.log(`[seed] Target database: ${isPostgres ? 'PostgreSQL (production)' : 'SQLite (local)'}`)
+
+  // Guard: when invoked for production, refuse to run if the production
+  // DATABASE_URL didn't actually load (otherwise we'd seed local SQLite by mistake).
+  if (process.env.SEED_REQUIRE_POSTGRES === '1' && !isPostgres) {
+    console.error(
+      '[seed] Aborting: SEED_REQUIRE_POSTGRES=1 but DATABASE_URL is not a Postgres string.\n' +
+        '       The production environment may not have loaded (is DATABASE_URL marked Sensitive in Vercel?).',
+    )
+    process.exit(1)
+  }
+
   const payload = await getPayload({ config })
 
   for (const course of [aiFoundation, aiFundamentals]) {
