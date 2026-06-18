@@ -251,7 +251,14 @@ export default async function HomePage() {
 }
 
 export const metadata: Metadata = {
-  title: 'hub4youth.ai — Learn AI & build real projects',
+  title: { absolute: 'hub4youth.ai — Learn AI & build real projects' },
   description:
     'Live, mentor-led AI courses for students and working professionals. Learn artificial intelligence and machine learning, and build real, intelligent applications.',
+  alternates: { canonical: '/' },
+  openGraph: {
+    title: 'hub4youth.ai — Learn AI & build real projects',
+    description:
+      'Live, mentor-led AI courses for students and working professionals. Learn AI and build real, intelligent applications.',
+    url: '/',
+  },
 }

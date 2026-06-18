@@ -14,6 +14,7 @@ import { Media } from '@/components/Media'
 import RichText from '@/components/RichText'
 import { CourseIcon } from '@/components/site/CourseIcon'
 import { formatPrice } from '@/utilities/formatPrice'
+import { getServerSideURL } from '@/utilities/getURL'
 
 export const dynamic = 'force-static'
 export const revalidate = 600
@@ -70,8 +71,35 @@ export default async function CoursePage({ params: paramsPromise }: Args) {
 
   const { title, summary, content, curriculum, outcomes, heroImage, duration, level, mode } = course
 
+  const courseJsonLd = {
+    '@context': 'https://schema.org',
+    '@type': 'Course',
+    name: title,
+    description: course.meta?.description || summary,
+    provider: {
+      '@type': 'Organization',
+      name: 'hub4youth.ai',
+      sameAs: getServerSideURL(),
+    },
+    offers: {
+      '@type': 'Offer',
+      category: (course.price ?? 0) > 0 ? 'Paid' : 'Free',
+      price: String(course.price ?? 0),
+      priceCurrency: course.currency || 'INR',
+    },
+    hasCourseInstance: {
+      '@type': 'CourseInstance',
+      courseMode: 'online',
+      ...(duration ? { courseWorkload: duration } : {}),
+    },
+  }
+
   return (
     <div>
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(courseJsonLd) }}
+      />
       <section className="border-b border-border bg-card">
         <div className="container grid gap-10 py-12 lg:grid-cols-3 lg:py-16">
           <div className="lg:col-span-2">
@@ -204,9 +232,17 @@ export default async function CoursePage({ params: paramsPromise }: Args) {
 export async function generateMetadata({ params: paramsPromise }: Args): Promise<Metadata> {
   const { slug = '' } = await paramsPromise
   const course = await queryCourseBySlug({ slug })
-  if (!course) return { title: 'Course not found — hub4youth' }
+  if (!course) return { title: 'Course not found' }
+  const description = course.meta?.description || course.summary
   return {
-    title: `${course.title} — hub4youth`,
-    description: course.meta?.description || course.summary,
+    title: course.title,
+    description,
+    alternates: { canonical: `/courses/${course.slug}` },
+    openGraph: {
+      title: `${course.title} — hub4youth.ai`,
+      description,
+      url: `/courses/${course.slug}`,
+      type: 'website',
+    },
   }
 }

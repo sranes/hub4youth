@@ -62,6 +62,7 @@ export default async function ContactPage({ searchParams }: Args) {
 }
 
 export const metadata: Metadata = {
-  title: 'Contact — hub4youth.ai',
+  title: 'Contact',
   description: 'Get in touch with hub4youth.ai to enquire about our AI courses.',
+  alternates: { canonical: '/contact' },
 }

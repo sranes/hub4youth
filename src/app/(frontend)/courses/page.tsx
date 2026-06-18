@@ -54,7 +54,14 @@ export default async function CoursesPage() {
 }
 
 export const metadata: Metadata = {
-  title: 'AI courses — hub4youth.ai',
+  title: 'AI courses',
   description:
     'Browse hub4youth.ai courses in artificial intelligence, machine learning and generative AI — from foundations to building real applications.',
+  alternates: { canonical: '/courses' },
+  openGraph: {
+    title: 'AI courses — hub4youth.ai',
+    description:
+      'Courses in artificial intelligence, machine learning and generative AI — from foundations to building real applications.',
+    url: '/courses',
+  },
 }

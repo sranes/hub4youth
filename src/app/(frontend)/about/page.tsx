@@ -146,7 +146,8 @@ export default function AboutPage() {
 }
 
 export const metadata: Metadata = {
-  title: 'About — hub4youth.ai',
+  title: 'About',
   description:
     'The vision behind hub4youth.ai — turning young learners from passive consumers into active creators by merging AI with real-world economic literacy.',
+  alternates: { canonical: '/about' },
 }
