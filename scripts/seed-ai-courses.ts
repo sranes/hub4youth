@@ -483,6 +483,250 @@ const aiFundamentals = {
   ]),
 }
 
+/* ---------- Course 3: Prompt Engineering (free, self-paced) ---------- */
+const promptEngineering = {
+  title: 'Prompt Engineering',
+  slug: 'prompt-engineering',
+  summary:
+    'A free, self-paced guide to writing prompts that get reliable, high-quality results from AI chatbots and large language models.',
+  price: 0,
+  currency: 'INR' as const,
+  duration: 'Self-paced · ~4 hours',
+  level: 'all' as const,
+  mode: 'self-paced' as const,
+  icon: 'code' as const,
+  featured: false,
+  outcomes: [
+    { outcome: 'Understand how language models interpret your prompts' },
+    { outcome: 'Write clear, specific prompts that get noticeably better results' },
+    { outcome: 'Apply techniques like few-shot and chain-of-thought prompting' },
+    { outcome: 'Get structured, reliable output you can use in real workflows' },
+  ],
+  curriculum: [
+    {
+      moduleTitle: 'Module 1 — What is prompt engineering?',
+      lessons: [{ lesson: 'How models read a prompt' }, { lesson: 'Why wording matters' }],
+    },
+    {
+      moduleTitle: 'Module 2 — Anatomy of a great prompt',
+      lessons: [
+        { lesson: 'Role, task and context' },
+        { lesson: 'Format, constraints and examples' },
+      ],
+    },
+    {
+      moduleTitle: 'Module 3 — Core techniques',
+      lessons: [
+        { lesson: 'Zero-shot and few-shot' },
+        { lesson: 'Chain-of-thought' },
+        { lesson: 'Role and persona prompting' },
+      ],
+    },
+    {
+      moduleTitle: 'Module 4 — Reliable, structured output',
+      lessons: [{ lesson: 'Asking for a format' }, { lesson: 'Delimiters and examples' }],
+    },
+    {
+      moduleTitle: 'Module 5 — Iterating, pitfalls & responsible use',
+      lessons: [
+        { lesson: 'Debugging a prompt' },
+        { lesson: 'Common mistakes' },
+        { lesson: 'Verifying and using AI responsibly' },
+      ],
+    },
+  ],
+  content: doc([
+    para([
+      b('Welcome! '),
+      t(
+        'Prompt engineering is the skill of asking AI models clearly enough to get exactly what you want. This free, self-paced course gives you a practical, reusable framework — no coding required.',
+      ),
+    ]),
+
+    heading('h2', 'Module 1 — What is prompt engineering?'),
+    para(
+      'A large language model (LLM) like ChatGPT generates a response by predicting what text should come next, based on your prompt. It has no idea what you "really meant" — it only has your words. Prompt engineering is the craft of choosing those words so the model reliably produces useful, accurate output.',
+    ),
+    heading('h3', 'Why wording matters'),
+    para(
+      'Two prompts asking for the "same" thing can give wildly different results. "Write about dogs" is vague; "Write a 100-word friendly paragraph for a pet-shop website explaining why golden retrievers are great family dogs" gives the model everything it needs. The more specific and structured your request, the better and more consistent the answer.',
+    ),
+
+    heading('h2', 'Module 2 — Anatomy of a great prompt'),
+    para('Most strong prompts include some combination of these ingredients:'),
+    ul([
+      [b('Role'), t(' — who the model should act as. "You are an experienced copywriter…"')],
+      [b('Task'), t(' — exactly what you want done. "Summarise the text below in 3 bullet points."')],
+      [b('Context'), t(' — the material or background it needs to do the task well.')],
+      [b('Format'), t(' — how the answer should look. "Return a numbered list" or "Reply in JSON."')],
+      [b('Constraints'), t(' — limits like length, tone, reading level, or what to avoid.')],
+      [b('Examples'), t(' — one or two samples of the kind of output you expect.')],
+    ]),
+    para(
+      'You don’t need all six every time, but naming the role, task and format alone will dramatically improve most results.',
+    ),
+
+    heading('h2', 'Module 3 — Core techniques'),
+    heading('h3', 'Zero-shot vs few-shot'),
+    para(
+      'A "zero-shot" prompt simply asks for the task with no examples. A "few-shot" prompt includes a couple of example input→output pairs first, so the model learns the exact pattern you want. Few-shot is powerful when the format is specific or unusual.',
+    ),
+    heading('h3', 'Chain-of-thought'),
+    para(
+      'For reasoning tasks (maths, logic, multi-step decisions), ask the model to "think step by step" before giving the final answer. Working through the steps visibly tends to produce more accurate results than jumping straight to a conclusion.',
+    ),
+    heading('h3', 'Role and persona prompting'),
+    para(
+      'Telling the model who to be ("You are a patient maths tutor for a 12-year-old") shapes vocabulary, depth and tone. It’s one of the simplest ways to steer style.',
+    ),
+
+    heading('h2', 'Module 4 — Reliable, structured output'),
+    para('To get output you can actually use — especially repeatedly — be explicit about structure:'),
+    ul([
+      'Ask for a specific format: a table, numbered list, JSON, or a fixed set of headings.',
+      'Use delimiters (like triple quotes or "---") to separate your instructions from the content to process.',
+      'Give one example of the exact output shape you want.',
+      'Specify length and tone so results are consistent.',
+    ]),
+
+    heading('h2', 'Module 5 — Iterating, pitfalls & responsible use'),
+    heading('h3', 'Debugging a prompt'),
+    para(
+      'Treat prompting as iteration: if the result is off, don’t start over — adjust one thing (add an example, tighten a constraint, clarify the format) and try again. Small changes often fix a lot.',
+    ),
+    heading('h3', 'Common mistakes'),
+    ul([
+      'Being vague or ambiguous about the goal.',
+      'Cramming too many unrelated tasks into one prompt.',
+      'Assuming the model knows context you never gave it.',
+      'Trusting confident answers without checking — models can "hallucinate" wrong facts.',
+    ]),
+    heading('h3', 'Using AI responsibly'),
+    para(
+      'Verify important outputs, don’t paste sensitive or private data into tools you don’t control, and be transparent when AI helped produce your work. Good prompting makes you faster — your judgement keeps it trustworthy.',
+    ),
+    para([
+      b('Next step: '),
+      t('practise on real tasks you do every week, and explore our AI Foundation course to learn how these models work under the hood.'),
+    ]),
+  ]),
+}
+
+/* ---------- Course 4: Neural Networks & Deep Learning (free, self-paced) ---------- */
+const neuralNetworks = {
+  title: 'Neural Networks & Deep Learning',
+  slug: 'neural-networks-and-deep-learning',
+  summary:
+    'A free, self-paced deep dive into how neural networks learn — from a single artificial neuron to the deep networks behind modern AI.',
+  price: 0,
+  currency: 'INR' as const,
+  duration: 'Self-paced · ~6 hours',
+  level: 'intermediate' as const,
+  mode: 'self-paced' as const,
+  icon: 'brain' as const,
+  featured: false,
+  outcomes: [
+    { outcome: 'Explain how an artificial neuron and activation function work' },
+    { outcome: 'Understand layers, weights and how a network makes predictions' },
+    { outcome: 'Describe how networks learn through loss and gradient descent' },
+    { outcome: 'Recognise CNNs, RNNs and transformers and what each is for' },
+  ],
+  curriculum: [
+    {
+      moduleTitle: 'Module 1 — From brain to artificial neuron',
+      lessons: [{ lesson: 'The artificial neuron' }, { lesson: 'Activation functions' }],
+    },
+    {
+      moduleTitle: 'Module 2 — Building a network',
+      lessons: [{ lesson: 'Layers and weights' }, { lesson: 'The forward pass' }],
+    },
+    {
+      moduleTitle: 'Module 3 — How networks learn',
+      lessons: [
+        { lesson: 'Loss functions' },
+        { lesson: 'Gradient descent' },
+        { lesson: 'Backpropagation' },
+      ],
+    },
+    {
+      moduleTitle: 'Module 4 — Training in practice',
+      lessons: [{ lesson: 'Epochs and batches' }, { lesson: 'Overfitting and regularisation' }],
+    },
+    {
+      moduleTitle: 'Module 5 — Architectures',
+      lessons: [
+        { lesson: 'Convolutional networks (images)' },
+        { lesson: 'Recurrent networks (sequences)' },
+        { lesson: 'Transformers and attention' },
+      ],
+    },
+  ],
+  content: doc([
+    para([
+      b('Welcome! '),
+      t(
+        'Neural networks power most of modern AI — image recognition, language models, and more. This free, self-paced course builds your intuition from the ground up. We focus on how things work, not heavy maths.',
+      ),
+    ]),
+
+    heading('h2', 'Module 1 — From brain to artificial neuron'),
+    para(
+      'A neural network is loosely inspired by the brain’s neurons. An artificial neuron takes several numbers as input, multiplies each by a "weight" (how important it is), adds them together with a bias, and passes the result through an activation function.',
+    ),
+    heading('h3', 'Activation functions'),
+    para(
+      'The activation function decides how strongly the neuron "fires", and crucially lets the network model non-linear patterns. Common ones include ReLU (keep positive values, zero out negatives) and the sigmoid (squash values between 0 and 1). Without them, a deep network would be no more powerful than a single straight-line equation.',
+    ),
+
+    heading('h2', 'Module 2 — Building a network'),
+    para(
+      'Stack neurons into layers and connect them and you have a network: an input layer (your data), one or more hidden layers, and an output layer (the prediction). Every connection has a weight, and these weights are what the network learns.',
+    ),
+    heading('h3', 'The forward pass'),
+    para(
+      'Running data through the network from input to output is called the forward pass. Each layer transforms the numbers a little, and the final layer produces the answer — a category, a probability, or a value.',
+    ),
+
+    heading('h2', 'Module 3 — How networks learn'),
+    para('A freshly created network is useless — its weights are random. Learning means tuning them:'),
+    ul([
+      [b('Loss function'), t(' — measures how wrong the prediction was compared to the correct answer.')],
+      [b('Gradient descent'), t(' — nudges every weight a little in the direction that reduces the loss.')],
+      [b('Backpropagation'), t(' — the algorithm that efficiently works out how much each weight contributed to the error.')],
+    ]),
+    para(
+      'Repeat this over millions of examples and the network’s weights gradually settle into values that make good predictions.',
+    ),
+
+    heading('h2', 'Module 4 — Training in practice'),
+    para('A few terms you’ll meet constantly:'),
+    ul([
+      [b('Epoch'), t(' — one full pass through the training data.')],
+      [b('Batch'), t(' — a small group of examples processed at once before updating the weights.')],
+      [b('Learning rate'), t(' — how big each weight adjustment is; too high overshoots, too low is slow.')],
+      [b('Overfitting'), t(' — when a network memorises the training data but fails on new data; techniques like dropout and regularisation help prevent it.')],
+    ]),
+
+    heading('h2', 'Module 5 — Architectures'),
+    heading('h3', 'Convolutional neural networks (CNNs)'),
+    para(
+      'CNNs are built for images. They scan an image with small filters that detect edges, textures and shapes, building up from simple features to whole objects layer by layer. They power photo tagging, medical imaging and self-driving perception.',
+    ),
+    heading('h3', 'Recurrent neural networks (RNNs)'),
+    para(
+      'RNNs process sequences — text, audio, time series — by carrying information from one step to the next. They were the standard for language tasks before transformers arrived.',
+    ),
+    heading('h3', 'Transformers and attention'),
+    para(
+      'The transformer architecture uses a mechanism called attention to weigh how much each part of the input relates to every other part. This made it possible to train today’s large language models, and it’s now the dominant architecture in AI.',
+    ),
+    para([
+      b('Next step: '),
+      t('to go hands-on and build and train networks yourself, continue with our instructor-led AI Foundation course.'),
+    ]),
+  ]),
+}
+
 /* ---------- Seeder ---------- */
 const run = async () => {
   const dbUrl = process.env.DATABASE_URL || ''
@@ -501,7 +745,7 @@ const run = async () => {
 
   const payload = await getPayload({ config })
 
-  for (const course of [aiFoundation, aiFundamentals]) {
+  for (const course of [aiFoundation, aiFundamentals, promptEngineering, neuralNetworks]) {
     const existing = await payload.find({
       collection: 'courses',
       where: { slug: { equals: course.slug } },

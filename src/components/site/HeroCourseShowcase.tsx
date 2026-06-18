@@ -23,7 +23,7 @@ const MODE_LABELS: Record<string, string> = {
   hybrid: 'Hybrid',
 }
 
-const ROTATE_MS = 4500
+const ROTATE_MS = 7500
 
 export const HeroCourseShowcase: React.FC<{ courses: Course[] }> = ({ courses }) => {
   const [index, setIndex] = useState(0)
