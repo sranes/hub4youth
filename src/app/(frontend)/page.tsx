@@ -16,6 +16,8 @@ import React from 'react'
 import type { Course } from '@/payload-types'
 import { Button } from '@/components/ui/button'
 import { CourseCard } from '@/components/site/CourseCard'
+import { CourseIcon } from '@/components/site/CourseIcon'
+import { BrandMark } from '@/components/site/BrandMark'
 
 export const dynamic = 'force-static'
 export const revalidate = 600
@@ -70,36 +72,93 @@ export default async function HomePage() {
   return (
     <div>
       {/* Hero */}
-      <section className="border-b border-border">
-        <div className="container py-20 text-center lg:py-28">
-          <span className="inline-block rounded-full bg-primary/10 px-3 py-1 text-xs font-medium text-primary">
-            For students &amp; working professionals
-          </span>
-          <h1 className="mx-auto mt-5 max-w-3xl text-4xl font-medium leading-tight tracking-tight sm:text-5xl">
-            Launch your tech career with industry-ready IT courses
-          </h1>
-          <p className="mx-auto mt-5 max-w-xl text-lg text-muted-foreground">
-            Hands-on, mentor-led training in coding, data, AI and cloud. Learn live, build real
-            projects, get certified.
-          </p>
-          <div className="mt-8 flex flex-wrap justify-center gap-3">
-            <Button asChild size="lg">
-              <Link href="/courses">Browse courses</Link>
-            </Button>
-            <Button asChild size="lg" variant="outline">
-              <Link href="/contact">Talk to an advisor</Link>
-            </Button>
+      <section className="relative overflow-hidden border-b border-border">
+        {/* on-brand decorative glow so wide screens don't read as empty */}
+        <div aria-hidden="true" className="pointer-events-none absolute inset-0 -z-10">
+          <div className="absolute -left-32 -top-24 size-[28rem] rounded-full bg-[#27AE60]/10 blur-3xl" />
+          <div className="absolute -right-32 bottom-0 size-[28rem] rounded-full bg-[#2B7FD4]/10 blur-3xl" />
+        </div>
+
+        <div className="container grid items-center gap-12 py-16 lg:grid-cols-2 lg:gap-16 lg:py-24">
+          {/* Left: copy */}
+          <div className="text-center lg:text-left">
+            <span className="inline-block rounded-full bg-primary/10 px-3 py-1 text-xs font-medium text-primary">
+              For students &amp; working professionals
+            </span>
+            <h1 className="mt-5 text-4xl font-medium leading-tight tracking-tight sm:text-5xl">
+              Launch your tech career with industry-ready IT courses
+            </h1>
+            <p className="mx-auto mt-5 max-w-xl text-lg text-muted-foreground lg:mx-0">
+              Hands-on, mentor-led training in coding, data, AI and cloud. Learn live, build real
+              projects, get certified.
+            </p>
+            <div className="mt-8 flex flex-wrap justify-center gap-3 lg:justify-start">
+              <Button asChild size="lg">
+                <Link href="/courses">Browse courses</Link>
+              </Button>
+              <Button asChild size="lg" variant="outline">
+                <Link href="/contact">Talk to an advisor</Link>
+              </Button>
+            </div>
+            <div className="mt-10 flex flex-wrap justify-center gap-x-10 gap-y-3 text-sm text-muted-foreground lg:justify-start">
+              <span>
+                <strong className="font-medium text-foreground">20+</strong> courses
+              </span>
+              <span>
+                <strong className="font-medium text-foreground">5,000+</strong> learners
+              </span>
+              <span>
+                <strong className="font-medium text-foreground">4.8/5</strong> average rating
+              </span>
+            </div>
           </div>
-          <div className="mt-12 flex flex-wrap justify-center gap-x-10 gap-y-3 text-sm text-muted-foreground">
-            <span>
-              <strong className="font-medium text-foreground">20+</strong> courses
-            </span>
-            <span>
-              <strong className="font-medium text-foreground">5,000+</strong> learners
-            </span>
-            <span>
-              <strong className="font-medium text-foreground">4.8/5</strong> average rating
-            </span>
+
+          {/* Right: course-preview visual */}
+          <div className="relative mx-auto w-full max-w-md lg:mx-0">
+            <div className="rounded-2xl border border-border bg-card p-6">
+              <div className="flex items-center gap-3">
+                <BrandMark className="size-9" />
+                <div>
+                  <div className="text-sm font-medium">hub4youth.ai</div>
+                  <div className="text-xs text-muted-foreground">Live cohorts · starting soon</div>
+                </div>
+              </div>
+              <div className="mt-5 space-y-2.5">
+                {[
+                  { icon: 'globe', name: 'Full-Stack Web Development', meta: '12 weeks', accent: '#27AE60' },
+                  { icon: 'brain', name: 'Data Science & AI', meta: '16 weeks', accent: '#8B5CF6' },
+                  { icon: 'cloud', name: 'Cloud & DevOps', meta: '10 weeks', accent: '#2B7FD4' },
+                ].map((c) => (
+                  <div
+                    key={c.name}
+                    className="flex items-center gap-3 rounded-lg border border-border p-3"
+                  >
+                    <span
+                      className="flex size-9 shrink-0 items-center justify-center rounded-md"
+                      style={{
+                        backgroundColor: `color-mix(in srgb, var(--card) 80%, ${c.accent} 20%)`,
+                        color: c.accent,
+                      }}
+                    >
+                      <CourseIcon name={c.icon} className="size-4" />
+                    </span>
+                    <div className="min-w-0 flex-1">
+                      <div className="truncate text-sm font-medium">{c.name}</div>
+                      <div className="text-xs text-muted-foreground">{c.meta} · live</div>
+                    </div>
+                    <ArrowRight className="size-4 shrink-0 text-muted-foreground" />
+                  </div>
+                ))}
+              </div>
+            </div>
+
+            {/* floating credential chips */}
+            <div className="absolute -right-3 -top-3 hidden items-center gap-1.5 rounded-lg border border-border bg-background px-3 py-1.5 text-xs font-medium shadow-sm sm:flex">
+              <Award className="size-3.5 text-primary" /> Certificate
+            </div>
+            <div className="absolute -bottom-3 -left-3 hidden items-center gap-1.5 rounded-lg border border-border bg-background px-3 py-1.5 text-xs font-medium shadow-sm sm:flex">
+              <Users className="size-3.5 text-primary" /> Mentor-led
+            </div>
           </div>
         </div>
       </section>
