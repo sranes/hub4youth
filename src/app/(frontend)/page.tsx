@@ -16,8 +16,7 @@ import React from 'react'
 import type { Course } from '@/payload-types'
 import { Button } from '@/components/ui/button'
 import { CourseCard } from '@/components/site/CourseCard'
-import { CourseIcon } from '@/components/site/CourseIcon'
-import { BrandMark } from '@/components/site/BrandMark'
+import { HeroCourseShowcase } from '@/components/site/HeroCourseShowcase'
 
 export const dynamic = 'force-static'
 export const revalidate = 600
@@ -113,53 +112,8 @@ export default async function HomePage() {
             </div>
           </div>
 
-          {/* Right: course-preview visual */}
-          <div className="relative mx-auto w-full max-w-md lg:mx-0">
-            <div className="rounded-2xl border border-border bg-card p-6">
-              <div className="flex items-center gap-3">
-                <BrandMark className="size-9" />
-                <div>
-                  <div className="text-sm font-medium">hub4youth.ai</div>
-                  <div className="text-xs text-muted-foreground">Live cohorts · starting soon</div>
-                </div>
-              </div>
-              <div className="mt-5 space-y-2.5">
-                {[
-                  { icon: 'globe', name: 'Full-Stack Web Development', meta: '12 weeks', accent: '#27AE60' },
-                  { icon: 'brain', name: 'Data Science & AI', meta: '16 weeks', accent: '#8B5CF6' },
-                  { icon: 'cloud', name: 'Cloud & DevOps', meta: '10 weeks', accent: '#2B7FD4' },
-                ].map((c) => (
-                  <div
-                    key={c.name}
-                    className="flex items-center gap-3 rounded-lg border border-border p-3"
-                  >
-                    <span
-                      className="flex size-9 shrink-0 items-center justify-center rounded-md"
-                      style={{
-                        backgroundColor: `color-mix(in srgb, var(--card) 80%, ${c.accent} 20%)`,
-                        color: c.accent,
-                      }}
-                    >
-                      <CourseIcon name={c.icon} className="size-4" />
-                    </span>
-                    <div className="min-w-0 flex-1">
-                      <div className="truncate text-sm font-medium">{c.name}</div>
-                      <div className="text-xs text-muted-foreground">{c.meta} · live</div>
-                    </div>
-                    <ArrowRight className="size-4 shrink-0 text-muted-foreground" />
-                  </div>
-                ))}
-              </div>
-            </div>
-
-            {/* floating credential chips */}
-            <div className="absolute -right-3 -top-3 hidden items-center gap-1.5 rounded-lg border border-border bg-background px-3 py-1.5 text-xs font-medium shadow-sm sm:flex">
-              <Award className="size-3.5 text-primary" /> Certificate
-            </div>
-            <div className="absolute -bottom-3 -left-3 hidden items-center gap-1.5 rounded-lg border border-border bg-background px-3 py-1.5 text-xs font-medium shadow-sm sm:flex">
-              <Users className="size-3.5 text-primary" /> Mentor-led
-            </div>
-          </div>
+          {/* Right: auto-flipping course showcase */}
+          <HeroCourseShowcase courses={courses} />
         </div>
       </section>
 
