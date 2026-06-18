@@ -7,18 +7,9 @@ import React, { useEffect, useRef, useState } from 'react'
 import type { Course } from '@/payload-types'
 import { CourseIcon } from './CourseIcon'
 
-const ACCENTS: Record<string, string> = {
-  code: '#6366F1',
-  globe: '#27AE60',
-  chart: '#14B8A6',
-  brain: '#8B5CF6',
-  cloud: '#2B7FD4',
-  smartphone: '#EC4899',
-  shield: '#E2574C',
-  database: '#E0992B',
-  palette: '#D946EF',
-}
-const DEFAULT_ACCENT = '#2B7FD4'
+// Cycled by card position so each card is a different colour, regardless of how
+// many courses are configured or whether they share the same icon.
+const PALETTE = ['#2B7FD4', '#27AE60', '#8B5CF6', '#E0992B', '#14B8A6', '#EC4899']
 
 const LEVEL_LABELS: Record<string, string> = {
   beginner: 'Beginner',
@@ -49,7 +40,7 @@ export const HeroCourseShowcase: React.FC<{ courses: Course[] }> = ({ courses })
   if (courses.length === 0) return null
 
   const course = courses[index]
-  const accent = (course.icon && ACCENTS[course.icon]) || DEFAULT_ACCENT
+  const accent = PALETTE[index % PALETTE.length]
   const highlights = (course.outcomes || []).slice(0, 3)
   const tags = [
     course.duration,
@@ -58,7 +49,7 @@ export const HeroCourseShowcase: React.FC<{ courses: Course[] }> = ({ courses })
 
   return (
     <div
-      className="relative mx-auto w-full max-w-sm lg:mx-0"
+      className="relative mx-auto w-full max-w-md"
       style={{ perspective: '1400px' }}
       onMouseEnter={() => (paused.current = true)}
       onMouseLeave={() => (paused.current = false)}
