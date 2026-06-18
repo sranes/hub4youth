@@ -24,9 +24,10 @@ export default async function CoursesPage() {
     <div>
       <section className="border-b border-border">
         <div className="container py-16 text-center lg:py-20">
-          <h1 className="text-3xl font-medium sm:text-4xl">Courses</h1>
+          <h1 className="text-3xl font-medium sm:text-4xl">AI courses</h1>
           <p className="mx-auto mt-3 max-w-xl text-muted-foreground">
-            Practical, mentor-led IT programs designed to get you hired and help you grow.
+            Practical, mentor-led AI programs designed to get you building real applications — and
+            hired.
           </p>
         </div>
       </section>
@@ -53,6 +54,7 @@ export default async function CoursesPage() {
 }
 
 export const metadata: Metadata = {
-  title: 'Courses — hub4youth',
-  description: 'Browse hub4youth online IT courses in coding, data, AI, cloud and more.',
+  title: 'AI courses — hub4youth.ai',
+  description:
+    'Browse hub4youth.ai courses in artificial intelligence, machine learning and generative AI — from foundations to building real applications.',
 }

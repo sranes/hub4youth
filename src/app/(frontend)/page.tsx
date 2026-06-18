@@ -48,20 +48,20 @@ const WHY = [
   {
     icon: Users,
     accent: '#2B7FD4',
-    title: 'Live, mentor-led classes',
-    body: 'Learn from working professionals in real time — ask questions, get unblocked, stay accountable.',
+    title: 'Live, mentor-led AI classes',
+    body: 'Learn AI in real time from working practitioners — ask questions, get unblocked, and stay accountable.',
   },
   {
     icon: BriefcaseBusiness,
     accent: '#27AE60',
-    title: 'Job-ready projects',
-    body: 'Build a portfolio of real projects that demonstrates your skills to employers.',
+    title: 'Build real AI projects',
+    body: 'Create a portfolio of AI applications — from models to deployed apps — that proves your skills to employers.',
   },
   {
     icon: Award,
     accent: '#E0992B',
-    title: 'Recognised certification',
-    body: 'Earn a shareable certificate you can add to your LinkedIn and résumé.',
+    title: 'Recognised AI certification',
+    body: 'Earn a shareable AI certificate you can add to your LinkedIn and résumé.',
   },
 ]
 
@@ -85,11 +85,11 @@ export default async function HomePage() {
               For students &amp; working professionals
             </span>
             <h1 className="mt-5 text-4xl font-medium leading-tight tracking-tight sm:text-5xl">
-              Launch your tech career with industry-ready IT courses
+              Launch your future with industry-ready AI skills
             </h1>
             <p className="mx-auto mt-5 max-w-xl text-lg text-muted-foreground lg:mx-0">
-              Hands-on, mentor-led training in coding, data, AI and cloud. Learn live, build real
-              projects, get certified.
+              Live, mentor-led courses in AI and machine learning — learn the concepts and build
+              real, intelligent applications, from first principles to your first deployed project.
             </p>
             <div className="mt-8 flex flex-wrap justify-center gap-3 lg:justify-start">
               <Button asChild size="lg">
@@ -101,7 +101,7 @@ export default async function HomePage() {
             </div>
             <div className="mt-10 flex flex-wrap justify-center gap-x-10 gap-y-3 text-sm text-muted-foreground lg:justify-start">
               <span>
-                <strong className="font-medium text-foreground">20+</strong> courses
+                <strong className="font-medium text-foreground">20+</strong> AI courses
               </span>
               <span>
                 <strong className="font-medium text-foreground">5,000+</strong> learners
@@ -121,9 +121,9 @@ export default async function HomePage() {
       <section className="container py-16 lg:py-20">
         <div className="flex items-end justify-between gap-4">
           <div>
-            <h2 className="text-2xl font-medium sm:text-3xl">Popular courses</h2>
+            <h2 className="text-2xl font-medium sm:text-3xl">Popular AI courses</h2>
             <p className="mt-2 text-muted-foreground">
-              Start with one of our most in-demand programs.
+              Start with one of our most in-demand AI programs.
             </p>
           </div>
           <Link
@@ -154,7 +154,7 @@ export default async function HomePage() {
       {/* Why hub4youth */}
       <section id="why" className="border-y border-border bg-card">
         <div className="container py-16 lg:py-20">
-          <h2 className="text-2xl font-medium sm:text-3xl">Why hub4youth</h2>
+          <h2 className="text-2xl font-medium sm:text-3xl">Why hub4youth.ai</h2>
           <div className="mt-8 grid gap-5 sm:grid-cols-3">
             {WHY.map(({ icon: Icon, accent, title, body }) => (
               <div
@@ -185,17 +185,18 @@ export default async function HomePage() {
       <section id="about" className="container py-16 lg:py-20">
         <div className="grid items-center gap-10 lg:grid-cols-2">
           <div>
-            <h2 className="text-2xl font-medium sm:text-3xl">Built for the next generation</h2>
+            <h2 className="text-2xl font-medium sm:text-3xl">Built for the AI generation</h2>
             <p className="mt-4 text-muted-foreground">
-              hub4youth helps students and professionals break into and grow within tech. Our
-              courses are practical, current, and taught by people who do the work every day.
+              hub4youth.ai helps students and professionals learn artificial intelligence and build
+              with it. Our courses are practical, current, and taught by people who work with AI
+              every day.
             </p>
             <ul className="mt-6 space-y-3 text-sm">
               {[
-                'Curriculum mapped to real industry roles',
-                'Small cohorts with personal mentorship',
-                'Flexible schedules for students and working pros',
-                'Career guidance and interview preparation',
+                'Curriculum focused on AI, machine learning and generative AI',
+                'Small cohorts with personal mentorship from AI practitioners',
+                'Hands-on projects building real AI applications',
+                'Career guidance for AI and tech roles',
               ].map((item) => (
                 <li key={item} className="flex items-start gap-2">
                   <CheckCircle2 className="mt-0.5 size-4 shrink-0 text-primary" />
@@ -207,8 +208,8 @@ export default async function HomePage() {
           <div className="rounded-xl border border-border bg-card p-8">
             <Quote className="size-7 text-primary" />
             <p className="mt-4 text-lg leading-relaxed">
-              “Went from zero coding to a junior developer offer in 5 months. The live classes made
-              all the difference.”
+              “Went from zero to building and deploying my own AI projects in months. The live,
+              mentor-led classes made all the difference.”
             </p>
             <div className="mt-5 flex items-center gap-3">
               <div className="flex size-9 items-center justify-center rounded-full bg-primary/10 text-sm font-medium text-primary">
@@ -216,7 +217,7 @@ export default async function HomePage() {
               </div>
               <div className="text-sm">
                 <div className="font-medium">Aanya K.</div>
-                <div className="text-muted-foreground">Web Development graduate</div>
+                <div className="text-muted-foreground">AI Foundation graduate</div>
               </div>
             </div>
           </div>
@@ -226,9 +227,9 @@ export default async function HomePage() {
       {/* CTA */}
       <section className="bg-primary text-primary-foreground">
         <div className="container py-16 text-center lg:py-20">
-          <h2 className="text-2xl font-medium sm:text-3xl">Ready to start learning?</h2>
+          <h2 className="text-2xl font-medium sm:text-3xl">Ready to start building with AI?</h2>
           <p className="mx-auto mt-3 max-w-md text-primary-foreground/80">
-            Book a free counselling call or browse our courses and enroll today.
+            Book a free counselling call or explore our AI courses and enroll today.
           </p>
           <div className="mt-7 flex flex-wrap justify-center gap-3">
             <Button asChild size="lg" variant="secondary">
@@ -250,7 +251,7 @@ export default async function HomePage() {
 }
 
 export const metadata: Metadata = {
-  title: 'hub4youth — Online IT courses for students & professionals',
+  title: 'hub4youth.ai — Learn AI & build real projects',
   description:
-    'Hands-on, mentor-led online IT courses in coding, data, AI and cloud. Learn live, build real projects, get certified.',
+    'Live, mentor-led AI courses for students and working professionals. Learn artificial intelligence and machine learning, and build real, intelligent applications.',
 }

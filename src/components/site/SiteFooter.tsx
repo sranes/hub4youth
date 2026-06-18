@@ -15,8 +15,8 @@ export const SiteFooter: React.FC = () => {
             </span>
           </Link>
           <p className="mt-3 max-w-xs text-sm text-muted-foreground">
-            Empowering the next generation through AI — industry-ready online IT courses for
-            students and working professionals.
+            Empowering the next generation through AI — live, mentor-led AI courses for students
+            and working professionals.
           </p>
         </div>
 
@@ -71,8 +71,8 @@ export const SiteFooter: React.FC = () => {
 
       <div className="border-t border-border">
         <div className="container flex flex-col items-center justify-between gap-2 py-6 text-sm text-muted-foreground sm:flex-row">
-          <span>© {new Date().getFullYear()} hub4youth. All rights reserved.</span>
-          <span>Built for the next generation of tech talent.</span>
+          <span>© {new Date().getFullYear()} hub4youth.ai. All rights reserved.</span>
+          <span>Empowering the next generation through AI.</span>
         </div>
       </div>
     </footer>
