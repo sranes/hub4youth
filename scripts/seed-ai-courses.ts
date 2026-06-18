@@ -2,8 +2,10 @@ import 'dotenv/config'
 import config from '@payload-config'
 import { getPayload } from 'payload'
 
+import type { Course } from '../src/payload-types'
+
 /* ---------- Lexical rich-text helpers ---------- */
-type Node = Record<string, unknown>
+type Node = { type: string; version: number; [k: string]: unknown }
 
 const t = (text: string, format = 0): Node => ({
   detail: 0,
@@ -55,9 +57,10 @@ const ul = (items: (Node[] | string)[]): Node => ({
   indent: 0,
   version: 1,
 })
-const doc = (children: Node[]) => ({
-  root: { type: 'root', children, direction: 'ltr', format: '', indent: 0, version: 1 },
-})
+const doc = (children: Node[]): Course['content'] =>
+  ({
+    root: { type: 'root', children, direction: 'ltr', format: '', indent: 0, version: 1 },
+  }) as Course['content']
 
 /* ---------- Course 1: AI Foundation (instructor-led) ---------- */
 const aiFoundation = {
