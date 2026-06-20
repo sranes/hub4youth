@@ -305,3 +305,12 @@ html[data-theme='light'] {
     animation: none;
   }
 }
+
+/* Hero section: decorative line-art background image */
+.hero-bg-image {
+  background-image: url('/hero-background.svg?v=2');
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+  opacity: 0.1;
+}

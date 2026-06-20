@@ -15,7 +15,7 @@ import React from 'react'
 
 import type { Course } from '@/payload-types'
 import { Button } from '@/components/ui/button'
-import { CourseCard } from '@/components/site/CourseCard'
+import { PopularCourses } from '@/components/site/PopularCourses'
 import { HeroCourseShowcase } from '@/components/site/HeroCourseShowcase'
 
 export const dynamic = 'force-static'
@@ -71,14 +71,16 @@ export default async function HomePage() {
   return (
     <div>
       {/* Hero */}
-      <section className="relative overflow-hidden border-b border-border">
+      <section className="relative overflow-hidden border-b border-border bg-gradient-to-b from-card to-background">
+        {/* attached line-art background image */}
+        <div aria-hidden="true" className="hero-bg-image pointer-events-none absolute inset-0 z-0" />
         {/* on-brand decorative glow so wide screens don't read as empty */}
-        <div aria-hidden="true" className="pointer-events-none absolute inset-0 -z-10">
+        <div aria-hidden="true" className="pointer-events-none absolute inset-0 z-0">
           <div className="absolute -left-32 -top-24 size-[28rem] rounded-full bg-[#27AE60]/10 blur-3xl" />
           <div className="absolute -right-32 bottom-0 size-[28rem] rounded-full bg-[#2B7FD4]/10 blur-3xl" />
         </div>
 
-        <div className="container grid items-center gap-12 py-16 lg:grid-cols-2 lg:gap-16 lg:py-24">
+        <div className="container relative z-10 grid items-center gap-12 py-16 lg:grid-cols-2 lg:gap-16 lg:py-24">
           {/* Left: copy */}
           <div className="text-center lg:text-left">
             <span className="inline-block rounded-full bg-primary/10 px-3 py-1 text-xs font-medium text-primary">
@@ -118,63 +120,57 @@ export default async function HomePage() {
       </section>
 
       {/* Featured courses */}
-      <section className="container py-16 lg:py-20">
-        <div className="flex items-end justify-between gap-4">
-          <div>
-            <h2 className="text-2xl font-medium sm:text-3xl">Popular AI courses</h2>
-            <p className="mt-2 text-muted-foreground">
-              Start with one of our most in-demand AI programs.
-            </p>
+      <section className="border-b border-border bg-muted">
+        <div className="container py-16 lg:py-20">
+          <div className="flex items-end justify-between gap-4">
+            <div>
+              <h2 className="text-2xl font-medium sm:text-3xl">Popular Courses</h2>
+              <p className="mt-2 text-muted-foreground">
+                Start with one of our most in-demand programs.
+              </p>
+            </div>
+            <Link
+              href="/courses"
+              className="hidden items-center gap-1 text-sm text-primary hover:underline sm:inline-flex"
+            >
+              View all <ArrowRight className="size-4" />
+            </Link>
           </div>
-          <Link
-            href="/courses"
-            className="hidden items-center gap-1 text-sm text-primary hover:underline sm:inline-flex"
-          >
-            View all <ArrowRight className="size-4" />
-          </Link>
-        </div>
 
-        {courses.length > 0 ? (
-          <div className="mt-8 grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
-            {courses.map((course) => (
-              <CourseCard key={course.id} course={course} />
-            ))}
-          </div>
-        ) : (
-          <div className="mt-8 rounded-xl border border-dashed border-border p-10 text-center text-muted-foreground">
-            No courses published yet. Add your first course in the{' '}
-            <a href="/admin" className="text-primary hover:underline">
-              admin panel
-            </a>
-            .
-          </div>
-        )}
+          {courses.length > 0 ? (
+            <div className="mt-8">
+              <PopularCourses courses={courses} />
+            </div>
+          ) : (
+            <div className="mt-8 rounded-xl border border-dashed border-border p-10 text-center text-muted-foreground">
+              No courses published yet. Add your first course in the{' '}
+              <a href="/admin" className="text-primary hover:underline">
+                admin panel
+              </a>
+              .
+            </div>
+          )}
+        </div>
       </section>
 
       {/* Why hub4youth */}
-      <section id="why" className="border-y border-border bg-card">
+      <section
+        id="why"
+        className="border-y border-border bg-gradient-to-br from-[#27AE60] to-[#2B7FD4]"
+      >
         <div className="container py-16 lg:py-20">
-          <h2 className="text-2xl font-medium sm:text-3xl">Why hub4youth.ai</h2>
-          <div className="mt-8 grid gap-5 sm:grid-cols-3">
-            {WHY.map(({ icon: Icon, accent, title, body }) => (
+          <h2 className="text-2xl font-medium text-white sm:text-3xl">Why hub4youth.ai</h2>
+          <div className="mt-10 grid divide-y divide-white/25 sm:grid-cols-3 sm:divide-x sm:divide-y-0">
+            {WHY.map(({ icon: Icon, title, body }) => (
               <div
                 key={title}
-                className="rounded-xl border border-border p-6"
-                style={{
-                  backgroundColor: `color-mix(in srgb, var(--card) 87%, ${accent} 13%)`,
-                }}
+                className="flex flex-col items-center px-6 py-8 text-center sm:px-8 sm:py-2"
               >
-                <div
-                  className="flex size-11 items-center justify-center rounded-lg"
-                  style={{
-                    backgroundColor: `color-mix(in srgb, var(--card) 76%, ${accent} 24%)`,
-                    color: accent,
-                  }}
-                >
-                  <Icon className="size-5" />
+                <div className="flex size-14 items-center justify-center rounded-full bg-white/15 text-white ring-1 ring-white/25">
+                  <Icon className="size-6" />
                 </div>
-                <h3 className="mt-4 text-lg font-medium">{title}</h3>
-                <p className="mt-2 text-sm text-muted-foreground">{body}</p>
+                <h3 className="mt-5 text-lg font-medium text-white">{title}</h3>
+                <p className="mt-2 text-sm text-white/85">{body}</p>
               </div>
             ))}
           </div>
@@ -182,8 +178,11 @@ export default async function HomePage() {
       </section>
 
       {/* About */}
-      <section id="about" className="container py-16 lg:py-20">
-        <div className="grid items-center gap-10 lg:grid-cols-2">
+      <section
+        id="about"
+        className="border-y border-border bg-gradient-to-br from-[#27AE60]/[0.06] via-background to-[#2B7FD4]/[0.06]"
+      >
+        <div className="container grid items-center gap-10 py-16 lg:grid-cols-2 lg:py-20">
           <div>
             <h2 className="text-2xl font-medium sm:text-3xl">Built for the AI generation</h2>
             <p className="mt-4 text-muted-foreground">

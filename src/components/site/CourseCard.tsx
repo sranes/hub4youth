@@ -28,9 +28,12 @@ const ACCENTS: Record<string, string> = {
 }
 const DEFAULT_ACCENT = '#6B7280'
 
-export const CourseCard: React.FC<{ course: Course }> = ({ course }) => {
+export const CourseCard: React.FC<{ course: Course; accent?: string }> = ({
+  course,
+  accent: accentProp,
+}) => {
   const { title, slug, summary, price, currency, duration, level, icon } = course
-  const accent = (icon && ACCENTS[icon]) || DEFAULT_ACCENT
+  const accent = accentProp || (icon && ACCENTS[icon]) || DEFAULT_ACCENT
 
   return (
     <Link
