@@ -840,9 +840,75 @@ export interface Course {
               id?: string | null;
             }[]
           | null;
+        /**
+         * Optional quiz shown at the end of this module.
+         */
+        quiz?: {
+          /**
+           * If on, learners must reach the pass mark here before the next module unlocks. Leave off for an optional quiz.
+           */
+          required?: boolean | null;
+          /**
+           * Minimum percentage to pass.
+           */
+          passMark?: number | null;
+          /**
+           * Leave empty for no quiz.
+           */
+          questions?:
+            | {
+                question: string;
+                type?: ('single' | 'multiple') | null;
+                /**
+                 * Tick every option that is correct.
+                 */
+                options?:
+                  | {
+                      text: string;
+                      correct?: boolean | null;
+                      id?: string | null;
+                    }[]
+                  | null;
+                id?: string | null;
+              }[]
+            | null;
+        };
         id?: string | null;
       }[]
     | null;
+  /**
+   * Optional assessment shown at the end of the course.
+   */
+  finalAssessment?: {
+    /**
+     * If on, learners must reach the pass mark here before the next module unlocks. Leave off for an optional quiz.
+     */
+    required?: boolean | null;
+    /**
+     * Minimum percentage to pass.
+     */
+    passMark?: number | null;
+    /**
+     * Leave empty for no quiz.
+     */
+    questions?:
+      | {
+          question: string;
+          type?: ('single' | 'multiple') | null;
+          /**
+           * Tick every option that is correct.
+           */
+          options?:
+            | {
+                text: string;
+                correct?: boolean | null;
+                id?: string | null;
+              }[]
+            | null;
+          id?: string | null;
+        }[]
+      | null;
+  };
   outcomes?:
     | {
         outcome: string;
@@ -920,6 +986,18 @@ export interface Enrollment {
    * Array of completed lesson ids (learner progress).
    */
   completedLessons?:
+    | {
+        [k: string]: unknown;
+      }
+    | unknown[]
+    | string
+    | number
+    | boolean
+    | null;
+  /**
+   * Quiz/assessment results keyed by quiz id ({ score, total, passed }).
+   */
+  quizResults?:
     | {
         [k: string]: unknown;
       }
@@ -1470,7 +1548,47 @@ export interface CoursesSelect<T extends boolean = true> {
               preview?: T;
               id?: T;
             };
+        quiz?:
+          | T
+          | {
+              required?: T;
+              passMark?: T;
+              questions?:
+                | T
+                | {
+                    question?: T;
+                    type?: T;
+                    options?:
+                      | T
+                      | {
+                          text?: T;
+                          correct?: T;
+                          id?: T;
+                        };
+                    id?: T;
+                  };
+            };
         id?: T;
+      };
+  finalAssessment?:
+    | T
+    | {
+        required?: T;
+        passMark?: T;
+        questions?:
+          | T
+          | {
+              question?: T;
+              type?: T;
+              options?:
+                | T
+                | {
+                    text?: T;
+                    correct?: T;
+                    id?: T;
+                  };
+              id?: T;
+            };
       };
   outcomes?:
     | T
@@ -1522,6 +1640,7 @@ export interface EnrollmentsSelect<T extends boolean = true> {
   course?: T;
   student?: T;
   completedLessons?: T;
+  quizResults?: T;
   courseTitle?: T;
   name?: T;
   email?: T;

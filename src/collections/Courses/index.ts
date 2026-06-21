@@ -1,4 +1,4 @@
-import type { CollectionConfig } from 'payload'
+import type { CollectionConfig, Field } from 'payload'
 
 import {
   FixedToolbarFeature,
@@ -21,6 +21,63 @@ import { authenticated } from '../../access/authenticated'
 import { authenticatedOrPublished } from '../../access/authenticatedOrPublished'
 import { generatePreviewPath } from '../../utilities/generatePreviewPath'
 import { revalidateCourse, revalidateCourseDelete } from './hooks/revalidateCourse'
+
+// Reusable quiz definition, used for both per-module quizzes and the course-level
+// final assessment. Auto-graded MCQ (single or multiple correct).
+const quizGroup = (name: string, label: string, description: string): Field => ({
+  name,
+  type: 'group',
+  label,
+  admin: { description },
+  fields: [
+    {
+      name: 'required',
+      type: 'checkbox',
+      defaultValue: false,
+      admin: {
+        description:
+          'If on, learners must reach the pass mark here before the next module unlocks. Leave off for an optional quiz.',
+      },
+    },
+    {
+      name: 'passMark',
+      type: 'number',
+      defaultValue: 70,
+      min: 0,
+      max: 100,
+      admin: { description: 'Minimum percentage to pass.' },
+    },
+    {
+      name: 'questions',
+      type: 'array',
+      labels: { singular: 'Question', plural: 'Questions' },
+      admin: { description: 'Leave empty for no quiz.' },
+      fields: [
+        { name: 'question', type: 'text', required: true },
+        {
+          name: 'type',
+          type: 'select',
+          defaultValue: 'single',
+          options: [
+            { label: 'Single correct answer', value: 'single' },
+            { label: 'Multiple correct answers', value: 'multiple' },
+          ],
+        },
+        {
+          name: 'options',
+          type: 'array',
+          minRows: 2,
+          labels: { singular: 'Option', plural: 'Options' },
+          admin: { description: 'Tick every option that is correct.' },
+          fields: [
+            { name: 'text', type: 'text', required: true },
+            { name: 'correct', type: 'checkbox', defaultValue: false },
+          ],
+        },
+      ],
+    },
+  ],
+})
 
 export const Courses: CollectionConfig = {
   slug: 'courses',
@@ -174,8 +231,18 @@ export const Courses: CollectionConfig = {
                     },
                   ],
                 },
+                quizGroup(
+                  'quiz',
+                  'Module quiz',
+                  'Optional quiz shown at the end of this module.',
+                ),
               ],
             },
+            quizGroup(
+              'finalAssessment',
+              'Final assessment',
+              'Optional assessment shown at the end of the course.',
+            ),
             {
               name: 'outcomes',
               type: 'array',

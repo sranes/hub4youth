@@ -53,6 +53,15 @@ export const Enrollments: CollectionConfig = {
       },
     },
     {
+      name: 'quizResults',
+      type: 'json',
+      defaultValue: {},
+      admin: {
+        readOnly: true,
+        description: 'Quiz/assessment results keyed by quiz id ({ score, total, passed }).',
+      },
+    },
+    {
       name: 'courseTitle',
       type: 'text',
       admin: {

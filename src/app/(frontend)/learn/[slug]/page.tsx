@@ -2,7 +2,7 @@ import type { Metadata } from 'next'
 
 import Link from 'next/link'
 import { notFound, redirect } from 'next/navigation'
-import { ArrowLeft, ArrowRight, Check, Lock } from 'lucide-react'
+import { ArrowLeft, ArrowRight, Check, HelpCircle, Lock } from 'lucide-react'
 import React from 'react'
 
 import type { Course } from '@/payload-types'
@@ -10,46 +10,48 @@ import { Button } from '@/components/ui/button'
 import RichText from '@/components/RichText'
 import { LessonComplete } from '@/components/site/LessonComplete'
 import { LessonMedia } from '@/components/site/LessonMedia'
+import { QuizRunner, type QuizQuestion } from '@/components/site/QuizRunner'
 import { getCurrentStudent } from '@/students/auth'
 import { completedLessonIds, getEnrolledCourse } from '@/students/enrollment'
+import type { QuizResult } from '@/app/(frontend)/learn/actions'
 import { cn } from '@/utilities/ui'
 
 export const dynamic = 'force-dynamic'
 
 type Args = {
   params: Promise<{ slug?: string }>
-  searchParams: Promise<{ lesson?: string }>
+  searchParams: Promise<{ lesson?: string; quiz?: string }>
 }
 
-type Lesson = NonNullable<NonNullable<Course['curriculum']>[number]['lessons']>[number]
+type Module = NonNullable<Course['curriculum']>[number]
+type Lesson = NonNullable<Module['lessons']>[number]
+type Quiz = NonNullable<Course['finalAssessment']>
 
-type FlatLesson = {
-  id: string
-  title: string
-  moduleTitle: string
-  content: Lesson['content']
-  videoUrl: Lesson['videoUrl']
-}
+type Item =
+  | { kind: 'lesson'; key: string; moduleIndex: number; moduleTitle: string; lesson: Lesson }
+  | {
+      kind: 'quiz'
+      key: string
+      moduleIndex: number
+      quizKey: string
+      title: string
+      quiz: Quiz
+    }
 
-function flattenLessons(course: Course): FlatLesson[] {
-  const out: FlatLesson[] = []
-  ;(course.curriculum || []).forEach((mod, mi) => {
-    ;(mod.lessons || []).forEach((l, li) => {
-      out.push({
-        id: l.id || `${mi}-${li}`,
-        title: l.lesson,
-        moduleTitle: mod.moduleTitle,
-        content: l.content,
-        videoUrl: l.videoUrl,
-      })
-    })
-  })
-  return out
+const hasQuestions = (q?: Quiz | null): q is Quiz => Boolean(q && (q.questions || []).length > 0)
+
+function stripQuestions(quiz: Quiz): QuizQuestion[] {
+  return (quiz.questions || []).map((q) => ({
+    id: q.id || '',
+    question: q.question,
+    type: q.type === 'multiple' ? 'multiple' : 'single',
+    options: (q.options || []).map((o) => ({ id: o.id || '', text: o.text })),
+  }))
 }
 
 export default async function LearnCoursePage({ params, searchParams }: Args) {
   const { slug = '' } = await params
-  const { lesson: lessonParam } = await searchParams
+  const { lesson: lessonParam, quiz: quizParam } = await searchParams
 
   const student = await getCurrentStudent()
   if (!student) redirect(`/login?redirect=${encodeURIComponent(`/learn/${slug}`)}`)
@@ -80,10 +82,53 @@ export default async function LearnCoursePage({ params, searchParams }: Args) {
   }
 
   const { course, enrollment } = result
-  const lessons = flattenLessons(course)
+  const modules = course.curriculum || []
   const completed = new Set(completedLessonIds(enrollment))
+  const quizResults = (enrollment.quizResults as Record<string, QuizResult> | null) || {}
 
-  if (lessons.length === 0) {
+  // A module blocks progression only if it has a *required* quiz that isn't passed.
+  const blocks = (m: Module) =>
+    hasQuestions(m.quiz) && Boolean(m.quiz?.required) && !quizResults[`module:${m.id}`]?.passed
+  const moduleUnlocked = (i: number) => !modules.slice(0, i).some(blocks)
+  const finalUnlocked = !modules.some(blocks)
+  const finalQuiz = hasQuestions(course.finalAssessment) ? course.finalAssessment! : null
+
+  // Flat, ordered list of navigable items: each module's lessons then its quiz,
+  // and finally the course assessment.
+  const items: Item[] = []
+  modules.forEach((mod, mi) => {
+    ;(mod.lessons || []).forEach((l, li) => {
+      items.push({
+        kind: 'lesson',
+        key: `lesson:${l.id || `${mi}-${li}`}`,
+        moduleIndex: mi,
+        moduleTitle: mod.moduleTitle,
+        lesson: l,
+      })
+    })
+    if (hasQuestions(mod.quiz)) {
+      items.push({
+        kind: 'quiz',
+        key: `quiz:module:${mod.id}`,
+        moduleIndex: mi,
+        quizKey: `module:${mod.id}`,
+        title: `${mod.moduleTitle} — quiz`,
+        quiz: mod.quiz!,
+      })
+    }
+  })
+  if (finalQuiz) {
+    items.push({
+      kind: 'quiz',
+      key: 'quiz:final',
+      moduleIndex: modules.length,
+      quizKey: 'final',
+      title: 'Final assessment',
+      quiz: finalQuiz,
+    })
+  }
+
+  if (items.length === 0) {
     return (
       <div className="container max-w-2xl py-20 text-center lg:py-28">
         <h1 className="text-2xl font-medium">{course.title}</h1>
@@ -97,16 +142,31 @@ export default async function LearnCoursePage({ params, searchParams }: Args) {
     )
   }
 
-  const activeIndex = Math.max(
-    0,
-    lessons.findIndex((l) => l.id === lessonParam),
-  )
-  const active = lessons[activeIndex]
-  const prev = activeIndex > 0 ? lessons[activeIndex - 1] : null
-  const next = activeIndex < lessons.length - 1 ? lessons[activeIndex + 1] : null
+  const itemLocked = (it: Item) =>
+    it.kind === 'quiz' && it.quizKey === 'final'
+      ? !finalUnlocked
+      : !moduleUnlocked(it.moduleIndex)
+  const itemHref = (it: Item) =>
+    it.kind === 'lesson'
+      ? `/learn/${course.slug}?lesson=${it.lesson.id}`
+      : `/learn/${course.slug}?quiz=${it.quizKey}`
 
-  const doneCount = lessons.filter((l) => completed.has(l.id)).length
-  const pct = Math.round((doneCount / lessons.length) * 100)
+  // Resolve the active item from the URL (defaults to the first).
+  let activeIndex = 0
+  if (quizParam) {
+    const i = items.findIndex((it) => it.kind === 'quiz' && it.quizKey === quizParam)
+    if (i >= 0) activeIndex = i
+  } else if (lessonParam) {
+    const i = items.findIndex((it) => it.kind === 'lesson' && it.lesson.id === lessonParam)
+    if (i >= 0) activeIndex = i
+  }
+  const active = items[activeIndex]
+  const prev = activeIndex > 0 ? items[activeIndex - 1] : null
+  const next = activeIndex < items.length - 1 ? items[activeIndex + 1] : null
+
+  const totalLessons = items.filter((it) => it.kind === 'lesson').length
+  const doneCount = items.filter((it) => it.kind === 'lesson' && completed.has(it.lesson.id!)).length
+  const pct = totalLessons > 0 ? Math.round((doneCount / totalLessons) * 100) : 0
 
   return (
     <div className="container py-8 lg:py-12">
@@ -119,38 +179,35 @@ export default async function LearnCoursePage({ params, searchParams }: Args) {
           <span className="text-foreground">{course.title}</span>
         </div>
         <span className="text-sm text-muted-foreground">
-          {doneCount} / {lessons.length} · {pct}%
+          {doneCount} / {totalLessons} · {pct}%
         </span>
       </div>
 
       <div className="mt-6 grid gap-8 lg:grid-cols-[300px_1fr]">
-        {/* Lesson list */}
+        {/* Course outline */}
         <aside className="lg:sticky lg:top-20 lg:self-start">
           <div className="h-2 overflow-hidden rounded-full bg-muted">
             <div className="h-full rounded-full bg-primary" style={{ width: `${pct}%` }} />
           </div>
           <nav className="mt-4 space-y-4">
-            {(course.curriculum || []).map((mod, mi) => (
-              <div key={mod.id || mi}>
-                <p className="text-xs font-medium uppercase tracking-wide text-muted-foreground">
-                  {mod.moduleTitle}
-                </p>
-                <ul className="mt-2 space-y-1">
-                  {(mod.lessons || []).map((l, li) => {
-                    const id = l.id || `${mi}-${li}`
-                    const isActive = id === active.id
-                    const isDone = completed.has(id)
-                    return (
-                      <li key={id}>
-                        <Link
-                          href={`/learn/${course.slug}?lesson=${id}`}
-                          className={cn(
-                            'flex items-start gap-2 rounded-md px-3 py-2 text-sm transition-colors',
-                            isActive
-                              ? 'bg-primary/10 font-medium text-foreground'
-                              : 'text-muted-foreground hover:bg-card hover:text-foreground',
-                          )}
-                        >
+            {modules.map((mod, mi) => {
+              const unlocked = moduleUnlocked(mi)
+              const quizKey = `module:${mod.id}`
+              const quizPassed = quizResults[quizKey]?.passed
+              return (
+                <div key={mod.id || mi}>
+                  <p className="flex items-center gap-1.5 text-xs font-medium uppercase tracking-wide text-muted-foreground">
+                    {!unlocked && <Lock className="size-3" />}
+                    {mod.moduleTitle}
+                  </p>
+                  <ul className="mt-2 space-y-1">
+                    {(mod.lessons || []).map((l, li) => {
+                      const id = l.id || `${mi}-${li}`
+                      const isActive = active.kind === 'lesson' && active.lesson.id === l.id
+                      const isDone = completed.has(id)
+                      const lockedRow = !unlocked
+                      const inner = (
+                        <>
                           <span
                             className={cn(
                               'mt-0.5 flex size-4 shrink-0 items-center justify-center rounded-full border',
@@ -162,60 +219,191 @@ export default async function LearnCoursePage({ params, searchParams }: Args) {
                             {isDone && <Check className="size-3" />}
                           </span>
                           <span>{l.lesson}</span>
-                        </Link>
+                        </>
+                      )
+                      return (
+                        <li key={id}>
+                          {lockedRow ? (
+                            <span className="flex cursor-not-allowed items-start gap-2 rounded-md px-3 py-2 text-sm text-muted-foreground/50">
+                              {inner}
+                            </span>
+                          ) : (
+                            <Link
+                              href={`/learn/${course.slug}?lesson=${id}`}
+                              className={cn(
+                                'flex items-start gap-2 rounded-md px-3 py-2 text-sm transition-colors',
+                                isActive
+                                  ? 'bg-primary/10 font-medium text-foreground'
+                                  : 'text-muted-foreground hover:bg-card hover:text-foreground',
+                              )}
+                            >
+                              {inner}
+                            </Link>
+                          )}
+                        </li>
+                      )
+                    })}
+
+                    {hasQuestions(mod.quiz) && (
+                      <li>
+                        {unlocked ? (
+                          <Link
+                            href={`/learn/${course.slug}?quiz=${quizKey}`}
+                            className={cn(
+                              'flex items-start gap-2 rounded-md px-3 py-2 text-sm transition-colors',
+                              active.kind === 'quiz' && active.quizKey === quizKey
+                                ? 'bg-primary/10 font-medium text-foreground'
+                                : 'text-muted-foreground hover:bg-card hover:text-foreground',
+                            )}
+                          >
+                            <span
+                              className={cn(
+                                'mt-0.5 flex size-4 shrink-0 items-center justify-center rounded-full border',
+                                quizPassed
+                                  ? 'border-primary bg-primary text-primary-foreground'
+                                  : 'border-muted-foreground/40',
+                              )}
+                            >
+                              {quizPassed ? (
+                                <Check className="size-3" />
+                              ) : (
+                                <HelpCircle className="size-3" />
+                              )}
+                            </span>
+                            <span>
+                              Quiz{mod.quiz?.required ? ' · required' : ''}
+                            </span>
+                          </Link>
+                        ) : (
+                          <span className="flex cursor-not-allowed items-start gap-2 rounded-md px-3 py-2 text-sm text-muted-foreground/50">
+                            <span className="mt-0.5 flex size-4 shrink-0 items-center justify-center rounded-full border border-muted-foreground/40">
+                              <HelpCircle className="size-3" />
+                            </span>
+                            <span>Quiz</span>
+                          </span>
+                        )}
                       </li>
-                    )
-                  })}
+                    )}
+                  </ul>
+                </div>
+              )
+            })}
+
+            {finalQuiz && (
+              <div>
+                <p className="flex items-center gap-1.5 text-xs font-medium uppercase tracking-wide text-muted-foreground">
+                  {!finalUnlocked && <Lock className="size-3" />}
+                  Final assessment
+                </p>
+                <ul className="mt-2">
+                  <li>
+                    {finalUnlocked ? (
+                      <Link
+                        href={`/learn/${course.slug}?quiz=final`}
+                        className={cn(
+                          'flex items-start gap-2 rounded-md px-3 py-2 text-sm transition-colors',
+                          active.kind === 'quiz' && active.quizKey === 'final'
+                            ? 'bg-primary/10 font-medium text-foreground'
+                            : 'text-muted-foreground hover:bg-card hover:text-foreground',
+                        )}
+                      >
+                        <span
+                          className={cn(
+                            'mt-0.5 flex size-4 shrink-0 items-center justify-center rounded-full border',
+                            quizResults['final']?.passed
+                              ? 'border-primary bg-primary text-primary-foreground'
+                              : 'border-muted-foreground/40',
+                          )}
+                        >
+                          {quizResults['final']?.passed ? (
+                            <Check className="size-3" />
+                          ) : (
+                            <HelpCircle className="size-3" />
+                          )}
+                        </span>
+                        <span>Take the assessment</span>
+                      </Link>
+                    ) : (
+                      <span className="flex cursor-not-allowed items-start gap-2 rounded-md px-3 py-2 text-sm text-muted-foreground/50">
+                        <span className="mt-0.5 flex size-4 shrink-0 items-center justify-center rounded-full border border-muted-foreground/40">
+                          <Lock className="size-3" />
+                        </span>
+                        <span>Complete required quizzes to unlock</span>
+                      </span>
+                    )}
+                  </li>
                 </ul>
               </div>
-            ))}
+            )}
           </nav>
         </aside>
 
-        {/* Lesson content */}
+        {/* Main content */}
         <article className="min-w-0">
-          <p className="text-sm text-muted-foreground">{active.moduleTitle}</p>
-          <h1 className="mt-1 text-2xl font-medium sm:text-3xl">{active.title}</h1>
-
-          {active.videoUrl && (
-            <div className="mt-6">
-              <LessonMedia url={active.videoUrl} title={active.title} />
-            </div>
-          )}
-
-          {active.content ? (
-            <RichText className="mt-6" data={active.content} enableGutter={false} />
-          ) : (
-            !active.videoUrl && (
-              <p className="mt-6 text-muted-foreground">
-                This lesson doesn&apos;t have content yet.
+          {itemLocked(active) ? (
+            <div className="rounded-xl border border-dashed border-border p-10 text-center">
+              <Lock className="mx-auto size-8 text-muted-foreground" />
+              <h1 className="mt-4 text-xl font-medium">This section is locked</h1>
+              <p className="mt-2 text-muted-foreground">
+                Pass the required quiz in the previous module to unlock it.
               </p>
-            )
-          )}
-
-          <div className="mt-10 flex flex-wrap items-center justify-between gap-4 border-t border-border pt-6">
-            <LessonComplete
-              enrollmentId={enrollment.id}
-              lessonId={active.id}
-              initialComplete={completed.has(active.id)}
-            />
-            <div className="flex gap-2">
-              {prev && (
-                <Button asChild variant="outline">
-                  <Link href={`/learn/${course.slug}?lesson=${prev.id}`}>
-                    <ArrowLeft className="mr-1.5 size-4" /> Previous
-                  </Link>
-                </Button>
-              )}
-              {next && (
-                <Button asChild variant="outline">
-                  <Link href={`/learn/${course.slug}?lesson=${next.id}`}>
-                    Next <ArrowRight className="ml-1.5 size-4" />
-                  </Link>
-                </Button>
-              )}
             </div>
-          </div>
+          ) : active.kind === 'lesson' ? (
+            <>
+              <p className="text-sm text-muted-foreground">{active.moduleTitle}</p>
+              <h1 className="mt-1 text-2xl font-medium sm:text-3xl">{active.lesson.lesson}</h1>
+
+              {active.lesson.videoUrl && (
+                <div className="mt-6">
+                  <LessonMedia url={active.lesson.videoUrl} title={active.lesson.lesson} />
+                </div>
+              )}
+
+              {active.lesson.content ? (
+                <RichText className="mt-6" data={active.lesson.content} enableGutter={false} />
+              ) : (
+                !active.lesson.videoUrl && (
+                  <p className="mt-6 text-muted-foreground">
+                    This lesson doesn&apos;t have content yet.
+                  </p>
+                )
+              )}
+
+              <div className="mt-10 flex flex-wrap items-center justify-between gap-4 border-t border-border pt-6">
+                <LessonComplete
+                  enrollmentId={enrollment.id}
+                  lessonId={active.lesson.id!}
+                  initialComplete={completed.has(active.lesson.id!)}
+                />
+                <div className="flex gap-2">
+                  {prev && !itemLocked(prev) && (
+                    <Button asChild variant="outline">
+                      <Link href={itemHref(prev)}>
+                        <ArrowLeft className="mr-1.5 size-4" /> Previous
+                      </Link>
+                    </Button>
+                  )}
+                  {next && !itemLocked(next) && (
+                    <Button asChild variant="outline">
+                      <Link href={itemHref(next)}>
+                        Next <ArrowRight className="ml-1.5 size-4" />
+                      </Link>
+                    </Button>
+                  )}
+                </div>
+              </div>
+            </>
+          ) : (
+            <QuizRunner
+              enrollmentId={enrollment.id}
+              quizKey={active.quizKey}
+              title={active.title}
+              passMark={active.quiz.passMark ?? 70}
+              required={Boolean(active.quiz.required)}
+              questions={stripQuestions(active.quiz)}
+              initialResult={quizResults[active.quizKey] || null}
+            />
+          )}
         </article>
       </div>
     </div>
