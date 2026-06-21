@@ -64,6 +64,12 @@ export const SiteHeader: React.FC<{ student?: HeaderStudent | null }> = ({ stude
                 >
                   My learning
                 </Link>
+                <Link
+                  href="/account"
+                  className="text-sm text-muted-foreground transition-colors hover:text-foreground"
+                >
+                  Account
+                </Link>
                 <Button size="sm" variant="outline" onClick={handleLogout}>
                   Log out
                 </Button>
@@ -114,6 +120,13 @@ export const SiteHeader: React.FC<{ student?: HeaderStudent | null }> = ({ stude
                   onClick={() => setOpen(false)}
                 >
                   My learning
+                </Link>
+                <Link
+                  href="/account"
+                  className="rounded-md px-2 py-2 text-sm text-muted-foreground hover:bg-card hover:text-foreground"
+                  onClick={() => setOpen(false)}
+                >
+                  Account
                 </Link>
                 <Button size="sm" variant="outline" className="mt-2" onClick={handleLogout}>
                   Log out

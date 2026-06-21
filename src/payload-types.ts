@@ -960,6 +960,15 @@ export interface Enrollment {
 export interface Student {
   id: number;
   name: string;
+  phone?: string | null;
+  /**
+   * When on, the student must enter an emailed code to log in.
+   */
+  twoFactorEnabled?: boolean | null;
+  twoFactorChallengeId?: string | null;
+  twoFactorCodeHash?: string | null;
+  twoFactorExpiresAt?: string | null;
+  twoFactorPendingToken?: string | null;
   updatedAt: string;
   createdAt: string;
   email: string;
@@ -1645,6 +1654,12 @@ export interface CategoriesSelect<T extends boolean = true> {
  */
 export interface StudentsSelect<T extends boolean = true> {
   name?: T;
+  phone?: T;
+  twoFactorEnabled?: T;
+  twoFactorChallengeId?: T;
+  twoFactorCodeHash?: T;
+  twoFactorExpiresAt?: T;
+  twoFactorPendingToken?: T;
   updatedAt?: T;
   createdAt?: T;
   email?: T;

@@ -7,7 +7,8 @@ import { cookies } from 'next/headers'
 import type { Student } from '@/payload-types'
 import { STUDENT_COOKIE } from './auth'
 
-async function setSessionCookie(token: string, exp?: number): Promise<void> {
+/** Set the Payload auth cookie from a session token (logs the browser in). */
+export async function setSessionCookie(token: string, exp?: number): Promise<void> {
   const store = await cookies()
   store.set(STUDENT_COOKIE, token, {
     httpOnly: true,
@@ -30,13 +31,21 @@ export async function findStudentByEmail(email: string): Promise<Student | null>
   return (res.docs[0] as Student) || null
 }
 
-/** Authenticate with email/password and set the session cookie. */
-export async function loginWithPassword(email: string, password: string): Promise<Student> {
+export type Credentials = { user: Student; token: string; exp?: number }
+
+/** Verify email/password WITHOUT setting the session cookie (used by 2FA step 1). */
+export async function verifyCredentials(email: string, password: string): Promise<Credentials> {
   const payload = await getPayload({ config: configPromise })
   const result = await payload.login({ collection: 'students', data: { email, password } })
   if (!result.token) throw new Error('Login failed')
-  await setSessionCookie(result.token, result.exp)
-  return result.user as unknown as Student
+  return { user: result.user as unknown as Student, token: result.token, exp: result.exp }
+}
+
+/** Authenticate with email/password and set the session cookie. */
+export async function loginWithPassword(email: string, password: string): Promise<Student> {
+  const { user, token, exp } = await verifyCredentials(email, password)
+  await setSessionCookie(token, exp)
+  return user
 }
 
 /** Create a new student account, then log them in (sets the session cookie). */
@@ -44,12 +53,18 @@ export async function createAndLoginStudent(input: {
   name: string
   email: string
   password: string
+  phone?: string
 }): Promise<Student> {
   const payload = await getPayload({ config: configPromise })
   await payload.create({
     collection: 'students',
     overrideAccess: true,
-    data: { name: input.name, email: input.email, password: input.password },
+    data: {
+      name: input.name,
+      email: input.email,
+      password: input.password,
+      phone: input.phone || undefined,
+    },
   })
   return loginWithPassword(input.email, input.password)
 }

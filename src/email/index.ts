@@ -86,6 +86,43 @@ export async function sendEnquiryEmails(
   }
 }
 
+export async function sendTwoFactorCode(
+  payload: Payload,
+  data: { name: string; email: string; code: string; expiresMinutes: number },
+): Promise<void> {
+  const { name, email, code, expiresMinutes } = data
+  await safeSend(payload, {
+    to: email,
+    subject: `Your ${BRAND} login code: ${code}`,
+    html: shell(
+      `Your login code`,
+      `<p style="line-height:1.6;">Hi ${name}, use this code to finish logging in:</p>
+       <p style="font-size:32px;font-weight:bold;letter-spacing:6px;margin:20px 0;color:${BRAND_COLOR};">${code}</p>
+       <p style="line-height:1.6;color:#666;">This code expires in ${expiresMinutes} minutes. If you didn't try to log in, you can ignore this email.</p>`,
+    ),
+  })
+}
+
+export async function sendPasswordReset(
+  payload: Payload,
+  data: { name: string; email: string; resetUrl: string; expiresMinutes: number },
+): Promise<void> {
+  const { name, email, resetUrl, expiresMinutes } = data
+  await safeSend(payload, {
+    to: email,
+    subject: `Reset your ${BRAND} password`,
+    html: shell(
+      `Reset your password`,
+      `<p style="line-height:1.6;">Hi ${name}, we received a request to reset your password. Click the button below to choose a new one:</p>
+       <p style="margin:24px 0;">
+         <a href="${resetUrl}" style="background:${BRAND_COLOR};color:#ffffff;text-decoration:none;padding:12px 24px;border-radius:8px;display:inline-block;font-weight:bold;">Reset password</a>
+       </p>
+       <p style="line-height:1.6;color:#666;">This link expires in ${expiresMinutes} minutes. If you didn't request this, you can safely ignore this email — your password won't change.</p>
+       <p style="line-height:1.6;color:#999;font-size:12px;word-break:break-all;">Or paste this link into your browser: ${resetUrl}</p>`,
+    ),
+  })
+}
+
 export type EnrollmentEmailData = {
   name: string
   email: string

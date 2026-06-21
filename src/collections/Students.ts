@@ -16,10 +16,24 @@ const adminOnly: Access = ({ req: { user } }) => user?.collection === 'users'
  * on the public site and can never reach the admin panel (`admin.user` is
  * `users`). Records are created server-side during signup/enrollment.
  */
+// Reset-password link lifetime (configurable). Payload expects milliseconds.
+const RESET_EXPIRATION_MS =
+  Number(process.env.PASSWORD_RESET_EXPIRATION_MINUTES || 60) * 60 * 1000
+
+// Sensitive, server-managed fields: never expose over the API, hide in admin.
+const internalField = {
+  access: { read: () => false, update: () => false, create: () => false },
+  admin: { hidden: true, readOnly: true },
+} as const
+
 export const Students: CollectionConfig = {
   slug: 'students',
   labels: { singular: 'Student', plural: 'Students' },
-  auth: true,
+  auth: {
+    forgotPassword: {
+      expiration: RESET_EXPIRATION_MS,
+    },
+  },
   access: {
     // Signup happens server-side (with overrideAccess) so we control validation.
     create: () => false,
@@ -29,7 +43,7 @@ export const Students: CollectionConfig = {
   },
   admin: {
     useAsTitle: 'email',
-    defaultColumns: ['name', 'email', 'createdAt'],
+    defaultColumns: ['name', 'email', 'twoFactorEnabled', 'createdAt'],
     group: 'Students',
   },
   fields: [
@@ -38,6 +52,24 @@ export const Students: CollectionConfig = {
       type: 'text',
       required: true,
     },
+    {
+      name: 'phone',
+      type: 'text',
+      // Optional contact number.
+    },
+    {
+      name: 'twoFactorEnabled',
+      type: 'checkbox',
+      defaultValue: false,
+      admin: {
+        description: 'When on, the student must enter an emailed code to log in.',
+      },
+    },
+    // --- Server-managed email-OTP login challenge (never exposed) ---
+    { name: 'twoFactorChallengeId', type: 'text', ...internalField },
+    { name: 'twoFactorCodeHash', type: 'text', ...internalField },
+    { name: 'twoFactorExpiresAt', type: 'date', ...internalField },
+    { name: 'twoFactorPendingToken', type: 'text', ...internalField },
   ],
   timestamps: true,
 }
