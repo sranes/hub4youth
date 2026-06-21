@@ -185,45 +185,33 @@ export default async function CoursePage({ params: paramsPromise }: Args) {
               </ul>
             </div>
           )}
-
-          {Array.isArray(curriculum) && curriculum.length > 0 && (
-            <div>
-              <h2 className="text-2xl font-medium">Curriculum</h2>
-              <div className="mt-4 space-y-3">
-                {curriculum.map((mod, i) => (
-                  <div key={mod.id || i} className="rounded-lg border border-border bg-card p-5">
-                    <h3 className="font-medium">
-                      <span className="text-muted-foreground">Module {i + 1}:</span>{' '}
-                      {mod.moduleTitle}
-                    </h3>
-                    {Array.isArray(mod.lessons) && mod.lessons.length > 0 && (
-                      <ul className="mt-3 space-y-1.5 text-sm text-muted-foreground">
-                        {mod.lessons.map((l, j) => (
-                          <li key={l.id || j} className="flex items-start gap-2">
-                            <span className="mt-1.5 size-1.5 shrink-0 rounded-full bg-primary" />
-                            <span>{l.lesson}</span>
-                          </li>
-                        ))}
-                      </ul>
-                    )}
-                  </div>
-                ))}
-              </div>
-            </div>
-          )}
         </div>
 
-        <aside className="lg:col-span-1">
-          <div className="rounded-xl border border-border p-6">
-            <h3 className="font-medium">Ready to join?</h3>
-            <p className="mt-2 text-sm text-muted-foreground">
-              Seats are limited each cohort. Enroll now or speak with an advisor.
-            </p>
-            <Button asChild className="mt-4 w-full">
-              <Link href={`/enroll?course=${course.slug}`}>Enroll now</Link>
-            </Button>
-          </div>
-        </aside>
+        {Array.isArray(curriculum) && curriculum.length > 0 && (
+          <aside className="lg:col-span-1">
+            <h2 className="text-2xl font-medium">Curriculum</h2>
+            <div className="mt-4 space-y-3">
+              {curriculum.map((mod, i) => (
+                <div key={mod.id || i} className="rounded-lg border border-border bg-card p-5">
+                  <h3 className="font-medium">
+                    <span className="text-muted-foreground">Module {i + 1}:</span>{' '}
+                    {mod.moduleTitle}
+                  </h3>
+                  {Array.isArray(mod.lessons) && mod.lessons.length > 0 && (
+                    <ul className="mt-3 space-y-1.5 text-sm text-muted-foreground">
+                      {mod.lessons.map((l, j) => (
+                        <li key={l.id || j} className="flex items-start gap-2">
+                          <span className="mt-1.5 size-1.5 shrink-0 rounded-full bg-primary" />
+                          <span>{l.lesson}</span>
+                        </li>
+                      ))}
+                    </ul>
+                  )}
+                </div>
+              ))}
+            </div>
+          </aside>
+        )}
       </section>
     </div>
   )
