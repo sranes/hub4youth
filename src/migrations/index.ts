@@ -3,6 +3,7 @@ import * as migration_20260621_063045_add_students_and_lesson_content from './20
 import * as migration_20260621_085446_add_student_phone_and_2fa from './20260621_085446_add_student_phone_and_2fa';
 import * as migration_20260621_100000_add_quizzes from './20260621_100000_add_quizzes';
 import * as migration_20260621_120000_seed_lesson_content from './20260621_120000_seed_lesson_content';
+import * as migration_20260621_140000_enrich_course_content from './20260621_140000_enrich_course_content';
 
 export const migrations = [
   {
@@ -29,5 +30,10 @@ export const migrations = [
     up: migration_20260621_120000_seed_lesson_content.up,
     down: migration_20260621_120000_seed_lesson_content.down,
     name: '20260621_120000_seed_lesson_content',
+  },
+  {
+    up: migration_20260621_140000_enrich_course_content.up,
+    down: migration_20260621_140000_enrich_course_content.down,
+    name: '20260621_140000_enrich_course_content',
   },
 ];
