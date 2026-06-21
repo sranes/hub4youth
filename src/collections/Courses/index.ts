@@ -138,6 +138,39 @@ export const Courses: CollectionConfig = {
                       name: 'lesson',
                       type: 'text',
                       required: true,
+                      label: 'Lesson title',
+                    },
+                    {
+                      name: 'content',
+                      type: 'richText',
+                      editor: lexicalEditor({
+                        features: ({ rootFeatures }) => [
+                          ...rootFeatures,
+                          HeadingFeature({ enabledHeadingSizes: ['h2', 'h3'] }),
+                          FixedToolbarFeature(),
+                          InlineToolbarFeature(),
+                          HorizontalRuleFeature(),
+                        ],
+                      }),
+                      admin: {
+                        description: 'Self-paced lesson body shown to enrolled students.',
+                      },
+                    },
+                    {
+                      name: 'videoUrl',
+                      type: 'text',
+                      admin: {
+                        description:
+                          'Optional video — paste a YouTube/Vimeo link or a direct .mp4 URL.',
+                      },
+                    },
+                    {
+                      name: 'preview',
+                      type: 'checkbox',
+                      defaultValue: false,
+                      admin: {
+                        description: 'Free preview — viewable without enrolling.',
+                      },
                     },
                   ],
                 },

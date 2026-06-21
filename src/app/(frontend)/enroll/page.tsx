@@ -10,6 +10,7 @@ import React from 'react'
 import { Button } from '@/components/ui/button'
 import { isPaymentEnabled } from '@/payments'
 import { formatPrice } from '@/utilities/formatPrice'
+import { getCurrentStudent } from '@/students/auth'
 import { CheckoutForm } from './CheckoutForm'
 
 export const dynamic = 'force-dynamic'
@@ -34,6 +35,7 @@ export default async function EnrollPage({ searchParams }: Args) {
   const currency = course.currency || 'INR'
   const amountLabel = formatPrice(amount, currency)
   const paymentReady = amount <= 0 || isPaymentEnabled()
+  const student = await getCurrentStudent()
 
   return (
     <div className="container max-w-4xl py-12 lg:py-16">
@@ -71,6 +73,9 @@ export default async function EnrollPage({ searchParams }: Args) {
                 courseSlug={slug}
                 courseTitle={course.title}
                 amountLabel={amountLabel}
+                loggedIn={Boolean(student)}
+                studentName={student?.name || undefined}
+                studentEmail={student?.email}
               />
             ) : (
               <div className="space-y-4">

@@ -1,6 +1,13 @@
-import type { CollectionConfig } from 'payload'
+import type { Access, CollectionConfig } from 'payload'
 
 import { authenticated } from '../access/authenticated'
+
+// Admin staff see all enrollments; a logged-in student may read only their own.
+const readOwnOrAdmin: Access = ({ req: { user } }) => {
+  if (!user) return false
+  if (user.collection === 'users') return true
+  return { student: { equals: user.id } }
+}
 
 export const Enrollments: CollectionConfig = {
   slug: 'enrollments',
@@ -11,7 +18,7 @@ export const Enrollments: CollectionConfig = {
   access: {
     // Records are created/updated only server-side (checkout action + webhooks) with overrideAccess.
     create: () => false,
-    read: authenticated,
+    read: readOwnOrAdmin,
     update: authenticated,
     delete: authenticated,
   },
@@ -26,6 +33,24 @@ export const Enrollments: CollectionConfig = {
       type: 'relationship',
       relationTo: 'courses',
       admin: { position: 'sidebar' },
+    },
+    {
+      name: 'student',
+      type: 'relationship',
+      relationTo: 'students',
+      admin: {
+        position: 'sidebar',
+        description: 'Linked learner account for on-site, self-paced access.',
+      },
+    },
+    {
+      name: 'completedLessons',
+      type: 'json',
+      defaultValue: [],
+      admin: {
+        readOnly: true,
+        description: 'Array of completed lesson ids (learner progress).',
+      },
     },
     {
       name: 'courseTitle',

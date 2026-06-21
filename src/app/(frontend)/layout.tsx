@@ -11,6 +11,7 @@ import { SiteFooter } from '@/components/site/SiteFooter'
 import { SiteHeader } from '@/components/site/SiteHeader'
 import { Providers } from '@/providers'
 import { InitTheme } from '@/providers/Theme/InitTheme'
+import { getCurrentStudent } from '@/students/auth'
 import { mergeOpenGraph } from '@/utilities/mergeOpenGraph'
 import { draftMode } from 'next/headers'
 import { Analytics } from '@vercel/analytics/next'
@@ -21,6 +22,7 @@ import { getServerSideURL } from '@/utilities/getURL'
 
 export default async function RootLayout({ children }: { children: React.ReactNode }) {
   const { isEnabled } = await draftMode()
+  const student = await getCurrentStudent()
 
   return (
     <html
@@ -57,7 +59,9 @@ export default async function RootLayout({ children }: { children: React.ReactNo
             }}
           />
 
-          <SiteHeader />
+          <SiteHeader
+            student={student ? { name: student.name, email: student.email } : null}
+          />
           {children}
           <SiteFooter />
         </Providers>

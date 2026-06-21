@@ -1,12 +1,14 @@
 'use client'
 
 import Link from 'next/link'
+import { useRouter } from 'next/navigation'
 import { Menu, X } from 'lucide-react'
 import React, { useState } from 'react'
 
 import { Button } from '@/components/ui/button'
 import { BrandMark } from '@/components/site/BrandMark'
 import { ThemeToggle } from '@/components/site/ThemeToggle'
+import { logoutStudent } from '@/students/actions'
 
 const NAV = [
   { label: 'Courses', href: '/courses' },
@@ -15,8 +17,18 @@ const NAV = [
   { label: 'Contact', href: '/contact' },
 ]
 
-export const SiteHeader: React.FC = () => {
+export type HeaderStudent = { name?: string | null; email: string }
+
+export const SiteHeader: React.FC<{ student?: HeaderStudent | null }> = ({ student }) => {
   const [open, setOpen] = useState(false)
+  const router = useRouter()
+
+  const handleLogout = async () => {
+    await logoutStudent()
+    setOpen(false)
+    router.push('/')
+    router.refresh()
+  }
 
   return (
     <header className="sticky top-0 z-50 border-b border-border bg-background/90 backdrop-blur">
@@ -43,10 +55,32 @@ export const SiteHeader: React.FC = () => {
         <div className="flex items-center gap-1">
           <ThemeToggle />
 
-          <div className="hidden md:block">
-            <Button asChild size="sm">
-              <Link href="/courses">Enroll now</Link>
-            </Button>
+          <div className="hidden items-center gap-2 md:flex">
+            {student ? (
+              <>
+                <Link
+                  href="/learn"
+                  className="text-sm text-muted-foreground transition-colors hover:text-foreground"
+                >
+                  My learning
+                </Link>
+                <Button size="sm" variant="outline" onClick={handleLogout}>
+                  Log out
+                </Button>
+              </>
+            ) : (
+              <>
+                <Link
+                  href="/login"
+                  className="text-sm text-muted-foreground transition-colors hover:text-foreground"
+                >
+                  Log in
+                </Link>
+                <Button asChild size="sm">
+                  <Link href="/courses">Enroll now</Link>
+                </Button>
+              </>
+            )}
           </div>
 
           <button
@@ -72,11 +106,35 @@ export const SiteHeader: React.FC = () => {
                 {item.label}
               </Link>
             ))}
-            <Button asChild size="sm" className="mt-2">
-              <Link href="/courses" onClick={() => setOpen(false)}>
-                Enroll now
-              </Link>
-            </Button>
+            {student ? (
+              <>
+                <Link
+                  href="/learn"
+                  className="rounded-md px-2 py-2 text-sm text-muted-foreground hover:bg-card hover:text-foreground"
+                  onClick={() => setOpen(false)}
+                >
+                  My learning
+                </Link>
+                <Button size="sm" variant="outline" className="mt-2" onClick={handleLogout}>
+                  Log out
+                </Button>
+              </>
+            ) : (
+              <>
+                <Link
+                  href="/login"
+                  className="rounded-md px-2 py-2 text-sm text-muted-foreground hover:bg-card hover:text-foreground"
+                  onClick={() => setOpen(false)}
+                >
+                  Log in
+                </Link>
+                <Button asChild size="sm" className="mt-2">
+                  <Link href="/courses" onClick={() => setOpen(false)}>
+                    Enroll now
+                  </Link>
+                </Button>
+              </>
+            )}
           </div>
         </nav>
       )}

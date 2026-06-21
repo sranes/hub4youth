@@ -1,5 +1,6 @@
 'use client'
 
+import Link from 'next/link'
 import { useRouter } from 'next/navigation'
 import React, { useActionState, useEffect, useState } from 'react'
 import { useFormStatus } from 'react-dom'
@@ -39,25 +40,38 @@ type Props = {
   courseSlug: string
   courseTitle: string
   amountLabel: string
+  loggedIn: boolean
+  studentName?: string
+  studentEmail?: string
 }
 
-export const CheckoutForm: React.FC<Props> = ({ courseSlug, courseTitle, amountLabel }) => {
+export const CheckoutForm: React.FC<Props> = ({
+  courseSlug,
+  courseTitle,
+  amountLabel,
+  loggedIn,
+  studentName,
+  studentEmail,
+}) => {
   const router = useRouter()
   const [state, formAction] = useActionState<CheckoutActionResult | null, FormData>(
     createCheckout,
     null,
   )
-  const [name, setName] = useState('')
-  const [email, setEmail] = useState('')
+  const [name, setName] = useState(studentName || '')
+  const [email, setEmail] = useState(studentEmail || '')
   const [phone, setPhone] = useState('')
   const [handling, setHandling] = useState(false)
+
+  const loginHref = `/login?redirect=${encodeURIComponent(`/enroll?course=${courseSlug}`)}`
 
   useEffect(() => {
     if (!state || !state.ok) return
     const { result, enrollmentId } = state
 
     if (result.type === 'free') {
-      router.push(`/enroll/success?enrollment=${enrollmentId}`)
+      router.push(`/learn/${courseSlug}`)
+      router.refresh()
       return
     }
 
@@ -102,29 +116,60 @@ export const CheckoutForm: React.FC<Props> = ({ courseSlug, courseTitle, amountL
     <form action={formAction} className="space-y-4">
       <input type="hidden" name="courseSlug" value={courseSlug} />
 
-      <div className="space-y-2">
-        <Label htmlFor="name">Full name *</Label>
-        <Input
-          id="name"
-          name="name"
-          required
-          value={name}
-          onChange={(e) => setName(e.target.value)}
-          placeholder="Your full name"
-        />
-      </div>
-      <div className="space-y-2">
-        <Label htmlFor="email">Email *</Label>
-        <Input
-          id="email"
-          name="email"
-          type="email"
-          required
-          value={email}
-          onChange={(e) => setEmail(e.target.value)}
-          placeholder="you@example.com"
-        />
-      </div>
+      {loggedIn ? (
+        <div className="rounded-lg border border-border bg-card p-4 text-sm">
+          Enrolling as <span className="font-medium text-foreground">{studentEmail}</span>. Your
+          course will be available in{' '}
+          <Link href="/learn" className="text-primary hover:underline">
+            My learning
+          </Link>
+          .
+        </div>
+      ) : (
+        <>
+          <div className="rounded-lg border border-border bg-card p-3 text-xs text-muted-foreground">
+            We&apos;ll create your learning account so you can take the course online.{' '}
+            <Link href={loginHref} className="text-primary hover:underline">
+              Already have an account? Log in
+            </Link>
+          </div>
+          <div className="space-y-2">
+            <Label htmlFor="name">Full name *</Label>
+            <Input
+              id="name"
+              name="name"
+              required
+              value={name}
+              onChange={(e) => setName(e.target.value)}
+              placeholder="Your full name"
+            />
+          </div>
+          <div className="space-y-2">
+            <Label htmlFor="email">Email *</Label>
+            <Input
+              id="email"
+              name="email"
+              type="email"
+              required
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
+              placeholder="you@example.com"
+            />
+          </div>
+          <div className="space-y-2">
+            <Label htmlFor="password">Create a password *</Label>
+            <Input
+              id="password"
+              name="password"
+              type="password"
+              required
+              minLength={8}
+              placeholder="At least 8 characters"
+            />
+          </div>
+        </>
+      )}
+
       <div className="space-y-2">
         <Label htmlFor="phone">Phone</Label>
         <Input
@@ -136,7 +181,19 @@ export const CheckoutForm: React.FC<Props> = ({ courseSlug, courseTitle, amountL
         />
       </div>
 
-      {state && !state.ok && <p className="text-sm text-destructive">{state.error}</p>}
+      {state && !state.ok && (
+        <p className="text-sm text-destructive">
+          {state.error}
+          {state.code === 'ACCOUNT_EXISTS' && (
+            <>
+              {' '}
+              <Link href={loginHref} className="font-medium underline">
+                Log in
+              </Link>
+            </>
+          )}
+        </p>
+      )}
       {handling && (
         <p className="text-sm text-muted-foreground">Redirecting you to secure payment…</p>
       )}

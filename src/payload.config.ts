@@ -14,6 +14,7 @@ import { Enrollments } from './collections/Enrollments'
 import { Media } from './collections/Media'
 import { Pages } from './collections/Pages'
 import { Posts } from './collections/Posts'
+import { Students } from './collections/Students'
 import { Users } from './collections/Users'
 import { Footer } from './Footer/config'
 import { Header } from './Header/config'
@@ -116,6 +117,7 @@ export default buildConfig({
     Enrollments,
     Media,
     Categories,
+    Students,
     Users,
   ],
   cors: [getServerSideURL()].filter(Boolean),

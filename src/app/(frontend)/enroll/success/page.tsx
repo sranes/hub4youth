@@ -17,6 +17,7 @@ export default async function EnrollSuccessPage({ searchParams }: Args) {
 
   let paid = false
   let courseTitle = ''
+  let courseSlug = ''
 
   if (id) {
     const payload = await getPayload({ config: configPromise })
@@ -24,10 +25,12 @@ export default async function EnrollSuccessPage({ searchParams }: Args) {
       const doc = await payload.findByID({
         collection: 'enrollments',
         id: Number(id),
+        depth: 1,
         overrideAccess: true,
       })
       paid = doc?.status === 'paid'
       courseTitle = doc?.courseTitle || ''
+      if (doc?.course && typeof doc.course === 'object') courseSlug = doc.course.slug || ''
     } catch {
       // ignore — show the generic processing state
     }
@@ -58,13 +61,26 @@ export default async function EnrollSuccessPage({ searchParams }: Args) {
         </>
       )}
 
-      <div className="mt-8 flex justify-center gap-3">
-        <Button asChild>
-          <Link href="/courses">Browse more courses</Link>
-        </Button>
-        <Button asChild variant="outline">
-          <Link href="/">Back to home</Link>
-        </Button>
+      <div className="mt-8 flex flex-wrap justify-center gap-3">
+        {paid && courseSlug ? (
+          <>
+            <Button asChild>
+              <Link href={`/learn/${courseSlug}`}>Start learning</Link>
+            </Button>
+            <Button asChild variant="outline">
+              <Link href="/learn">My learning</Link>
+            </Button>
+          </>
+        ) : (
+          <>
+            <Button asChild>
+              <Link href="/courses">Browse more courses</Link>
+            </Button>
+            <Button asChild variant="outline">
+              <Link href="/">Back to home</Link>
+            </Button>
+          </>
+        )}
       </div>
     </div>
   )

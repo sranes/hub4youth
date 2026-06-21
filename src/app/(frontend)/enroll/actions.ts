@@ -5,27 +5,62 @@ import { getPayload } from 'payload'
 
 import { getPaymentProvider, isPaymentEnabled, type CheckoutResult } from '@/payments'
 import { getServerSideURL } from '@/utilities/getURL'
+import { getCurrentStudent } from '@/students/auth'
+import { createAndLoginStudent, findStudentByEmail } from '@/students/session'
 
 type FreeResult = { type: 'free' }
 
 export type CheckoutActionResult =
-  | { ok: true; enrollmentId: number; result: CheckoutResult | FreeResult }
-  | { ok: false; error: string }
+  | { ok: true; enrollmentId: number; courseSlug: string; result: CheckoutResult | FreeResult }
+  | { ok: false; error: string; code?: 'ACCOUNT_EXISTS' }
 
 export async function createCheckout(
   _prev: CheckoutActionResult | null,
   formData: FormData,
 ): Promise<CheckoutActionResult> {
   const courseSlug = String(formData.get('courseSlug') || '').trim()
-  const name = String(formData.get('name') || '').trim()
-  const email = String(formData.get('email') || '').trim()
+  const formName = String(formData.get('name') || '').trim()
+  const formEmail = String(formData.get('email') || '')
+    .trim()
+    .toLowerCase()
   const phone = String(formData.get('phone') || '').trim()
+  const password = String(formData.get('password') || '')
 
   if (!courseSlug) return { ok: false, error: 'Missing course.' }
-  if (!name || !email) return { ok: false, error: 'Please provide your name and email.' }
-  if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
-    return { ok: false, error: 'Please enter a valid email address.' }
+
+  // A learning account is required so the student can take the course on-site.
+  // Use the logged-in student if present, otherwise create the account now.
+  let student = await getCurrentStudent()
+
+  if (!student) {
+    if (!formName || !formEmail) {
+      return { ok: false, error: 'Please provide your name and email.' }
+    }
+    if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(formEmail)) {
+      return { ok: false, error: 'Please enter a valid email address.' }
+    }
+    if (password.length < 8) {
+      return {
+        ok: false,
+        error: 'Choose a password (at least 8 characters) to create your learning account.',
+      }
+    }
+    if (await findStudentByEmail(formEmail)) {
+      return {
+        ok: false,
+        error: 'An account with this email already exists. Please log in to continue.',
+        code: 'ACCOUNT_EXISTS',
+      }
+    }
+    try {
+      student = await createAndLoginStudent({ name: formName, email: formEmail, password })
+    } catch {
+      return { ok: false, error: 'Could not create your account. Please try again.' }
+    }
   }
+
+  const name = student.name || formName
+  const email = student.email
 
   const payload = await getPayload({ config: configPromise })
 
@@ -49,6 +84,7 @@ export async function createCheckout(
     data: {
       course: course.id,
       courseTitle: course.title,
+      student: student.id,
       name,
       email,
       phone: phone || undefined,
@@ -66,7 +102,7 @@ export async function createCheckout(
       overrideAccess: true,
       data: { status: 'paid' },
     })
-    return { ok: true, enrollmentId: enrollment.id, result: { type: 'free' } }
+    return { ok: true, enrollmentId: enrollment.id, courseSlug, result: { type: 'free' } }
   }
 
   if (!isPaymentEnabled()) {
@@ -105,7 +141,7 @@ export async function createCheckout(
       },
     })
 
-    return { ok: true, enrollmentId: enrollment.id, result }
+    return { ok: true, enrollmentId: enrollment.id, courseSlug, result }
   } catch (err) {
     console.error('Checkout creation failed:', err)
     await payload.update({

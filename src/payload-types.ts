@@ -63,6 +63,7 @@ export type SupportedTimezones =
 
 export interface Config {
   auth: {
+    students: StudentAuthOperations;
     users: UserAuthOperations;
   };
   blocks: {};
@@ -74,6 +75,7 @@ export interface Config {
     enrollments: Enrollment;
     media: Media;
     categories: Category;
+    students: Student;
     users: User;
     redirects: Redirect;
     forms: Form;
@@ -94,6 +96,7 @@ export interface Config {
     enrollments: EnrollmentsSelect<false> | EnrollmentsSelect<true>;
     media: MediaSelect<false> | MediaSelect<true>;
     categories: CategoriesSelect<false> | CategoriesSelect<true>;
+    students: StudentsSelect<false> | StudentsSelect<true>;
     users: UsersSelect<false> | UsersSelect<true>;
     redirects: RedirectsSelect<false> | RedirectsSelect<true>;
     forms: FormsSelect<false> | FormsSelect<true>;
@@ -121,7 +124,7 @@ export interface Config {
   widgets: {
     collections: CollectionsWidget;
   };
-  user: User;
+  user: Student | User;
   jobs: {
     tasks: {
       schedulePublish: TaskSchedulePublish;
@@ -131,6 +134,24 @@ export interface Config {
       };
     };
     workflows: unknown;
+  };
+}
+export interface StudentAuthOperations {
+  forgotPassword: {
+    email: string;
+    password: string;
+  };
+  login: {
+    email: string;
+    password: string;
+  };
+  registerFirstUser: {
+    email: string;
+    password: string;
+  };
+  unlock: {
+    email: string;
+    password: string;
   };
 }
 export interface UserAuthOperations {
@@ -790,6 +811,32 @@ export interface Course {
         lessons?:
           | {
               lesson: string;
+              /**
+               * Self-paced lesson body shown to enrolled students.
+               */
+              content?: {
+                root: {
+                  type: string;
+                  children: {
+                    type: any;
+                    version: number;
+                    [k: string]: unknown;
+                  }[];
+                  direction: ('ltr' | 'rtl') | null;
+                  format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
+                  indent: number;
+                  version: number;
+                };
+                [k: string]: unknown;
+              } | null;
+              /**
+               * Optional video — paste a YouTube/Vimeo link or a direct .mp4 URL.
+               */
+              videoUrl?: string | null;
+              /**
+               * Free preview — viewable without enrolling.
+               */
+              preview?: boolean | null;
               id?: string | null;
             }[]
           | null;
@@ -866,6 +913,22 @@ export interface Enrollment {
   id: number;
   course?: (number | null) | Course;
   /**
+   * Linked learner account for on-site, self-paced access.
+   */
+  student?: (number | null) | Student;
+  /**
+   * Array of completed lesson ids (learner progress).
+   */
+  completedLessons?:
+    | {
+        [k: string]: unknown;
+      }
+    | unknown[]
+    | string
+    | number
+    | boolean
+    | null;
+  /**
    * Snapshot of the course title at the time of enrollment.
    */
   courseTitle?: string | null;
@@ -889,6 +952,32 @@ export interface Enrollment {
   status?: ('pending' | 'paid' | 'failed' | 'refunded') | null;
   updatedAt: string;
   createdAt: string;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "students".
+ */
+export interface Student {
+  id: number;
+  name: string;
+  updatedAt: string;
+  createdAt: string;
+  email: string;
+  resetPasswordToken?: string | null;
+  resetPasswordExpiration?: string | null;
+  salt?: string | null;
+  hash?: string | null;
+  loginAttempts?: number | null;
+  lockUntil?: string | null;
+  sessions?:
+    | {
+        id: string;
+        createdAt?: string | null;
+        expiresAt: string;
+      }[]
+    | null;
+  password?: string | null;
+  collection: 'students';
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
@@ -1109,6 +1198,10 @@ export interface PayloadLockedDocument {
         value: number | Category;
       } | null)
     | ({
+        relationTo: 'students';
+        value: number | Student;
+      } | null)
+    | ({
         relationTo: 'users';
         value: number | User;
       } | null)
@@ -1129,10 +1222,15 @@ export interface PayloadLockedDocument {
         value: number | Search;
       } | null);
   globalSlug?: string | null;
-  user: {
-    relationTo: 'users';
-    value: number | User;
-  };
+  user:
+    | {
+        relationTo: 'students';
+        value: number | Student;
+      }
+    | {
+        relationTo: 'users';
+        value: number | User;
+      };
   updatedAt: string;
   createdAt: string;
 }
@@ -1142,10 +1240,15 @@ export interface PayloadLockedDocument {
  */
 export interface PayloadPreference {
   id: number;
-  user: {
-    relationTo: 'users';
-    value: number | User;
-  };
+  user:
+    | {
+        relationTo: 'students';
+        value: number | Student;
+      }
+    | {
+        relationTo: 'users';
+        value: number | User;
+      };
   key?: string | null;
   value?:
     | {
@@ -1353,6 +1456,9 @@ export interface CoursesSelect<T extends boolean = true> {
           | T
           | {
               lesson?: T;
+              content?: T;
+              videoUrl?: T;
+              preview?: T;
               id?: T;
             };
         id?: T;
@@ -1405,6 +1511,8 @@ export interface EnquiriesSelect<T extends boolean = true> {
  */
 export interface EnrollmentsSelect<T extends boolean = true> {
   course?: T;
+  student?: T;
+  completedLessons?: T;
   courseTitle?: T;
   name?: T;
   email?: T;
@@ -1530,6 +1638,29 @@ export interface CategoriesSelect<T extends boolean = true> {
       };
   updatedAt?: T;
   createdAt?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "students_select".
+ */
+export interface StudentsSelect<T extends boolean = true> {
+  name?: T;
+  updatedAt?: T;
+  createdAt?: T;
+  email?: T;
+  resetPasswordToken?: T;
+  resetPasswordExpiration?: T;
+  salt?: T;
+  hash?: T;
+  loginAttempts?: T;
+  lockUntil?: T;
+  sessions?:
+    | T
+    | {
+        id?: T;
+        createdAt?: T;
+        expiresAt?: T;
+      };
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
