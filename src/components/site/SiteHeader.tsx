@@ -75,17 +75,9 @@ export const SiteHeader: React.FC<{ student?: HeaderStudent | null }> = ({ stude
                 </Button>
               </>
             ) : (
-              <>
-                <Link
-                  href="/login"
-                  className="text-sm text-muted-foreground transition-colors hover:text-foreground"
-                >
-                  Log in
-                </Link>
-                <Button asChild size="sm">
-                  <Link href="/courses">Enroll now</Link>
-                </Button>
-              </>
+              <Button asChild size="sm">
+                <Link href="/login">Log in</Link>
+              </Button>
             )}
           </div>
 
@@ -133,20 +125,11 @@ export const SiteHeader: React.FC<{ student?: HeaderStudent | null }> = ({ stude
                 </Button>
               </>
             ) : (
-              <>
-                <Link
-                  href="/login"
-                  className="rounded-md px-2 py-2 text-sm text-muted-foreground hover:bg-card hover:text-foreground"
-                  onClick={() => setOpen(false)}
-                >
+              <Button asChild size="sm" className="mt-2">
+                <Link href="/login" onClick={() => setOpen(false)}>
                   Log in
                 </Link>
-                <Button asChild size="sm" className="mt-2">
-                  <Link href="/courses" onClick={() => setOpen(false)}>
-                    Enroll now
-                  </Link>
-                </Button>
-              </>
+              </Button>
             )}
           </div>
         </nav>
