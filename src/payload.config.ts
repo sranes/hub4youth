@@ -100,7 +100,13 @@ export default buildConfig({
           // chain Node won't verify, causing "self-signed certificate in
           // certificate chain". Keep TLS on but skip chain verification unless
           // DATABASE_SSL_STRICT=true (set that once you supply the provider CA).
-          ssl: process.env.DATABASE_SSL_STRICT === 'true' ? true : { rejectUnauthorized: false },
+          // Set DATABASE_DISABLE_SSL=true for a local/dev Postgres with no TLS.
+          ssl:
+            process.env.DATABASE_DISABLE_SSL === 'true'
+              ? false
+              : process.env.DATABASE_SSL_STRICT === 'true'
+                ? true
+                : { rejectUnauthorized: false },
         },
         // Auto-sync the schema on deploy (simplest path for this app's scale).
         // Set PAYLOAD_DB_PUSH=false and use `payload migrate` for stricter control.
