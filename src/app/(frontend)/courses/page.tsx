@@ -4,10 +4,13 @@ import configPromise from '@payload-config'
 import { getPayload } from 'payload'
 import React from 'react'
 
-import { CourseCard } from '@/components/site/CourseCard'
+import { CourseCardDetailed } from '@/components/site/CourseCardDetailed'
 
 export const dynamic = 'force-static'
 export const revalidate = 600
+
+// One distinct colour per card position, matching the homepage "Popular courses".
+const PALETTE = ['#2B7FD4', '#27AE60', '#8B5CF6', '#E0992B', '#14B8A6', '#EC4899']
 
 export default async function CoursesPage() {
   const payload = await getPayload({ config: configPromise })
@@ -15,6 +18,9 @@ export default async function CoursesPage() {
   const courses = await payload.find({
     collection: 'courses',
     depth: 1,
+    // Courses.defaultPopulate omits `curriculum`; include it so cards can show
+    // the lesson count.
+    populate: { courses: { curriculum: true } },
     limit: 100,
     overrideAccess: false,
     sort: '-createdAt',
@@ -22,9 +28,9 @@ export default async function CoursesPage() {
 
   return (
     <div>
-      <section className="border-b border-border">
+      <section className="border-b border-border bg-gradient-to-b from-card to-background">
         <div className="container py-16 text-center lg:py-20">
-          <h1 className="text-3xl font-medium sm:text-4xl">AI courses</h1>
+          <h1 className="text-3xl font-medium sm:text-4xl">All courses</h1>
           <p className="mx-auto mt-3 max-w-xl text-muted-foreground">
             Practical, mentor-led AI programs designed to get you building real applications — and
             hired.
@@ -35,8 +41,12 @@ export default async function CoursesPage() {
       <section className="container py-12 lg:py-16">
         {courses.docs.length > 0 ? (
           <div className="grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
-            {courses.docs.map((course) => (
-              <CourseCard key={course.id} course={course} />
+            {courses.docs.map((course, i) => (
+              <CourseCardDetailed
+                key={course.id}
+                course={course}
+                accent={PALETTE[i % PALETTE.length]}
+              />
             ))}
           </div>
         ) : (
