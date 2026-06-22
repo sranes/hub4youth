@@ -468,10 +468,10 @@ export async function createMcpCourse(payload: Payload, req?: PayloadRequest): P
   })
   const curriculum = (fresh.curriculum || []).map((mod, mi) => ({
     ...mod,
-    lessons: (mod.lessons || []).map((l, li) => ({
-      ...l,
-      content: buildLessonState(MODULES[mi].lessons[li].content),
-    })),
+    lessons: (mod.lessons || []).map((l, li) => {
+      const lc = MODULES[mi].lessons[li].content
+      return { ...l, content: buildLessonState(lc), ...(lc.tryIt ? { tryIt: lc.tryIt } : {}) }
+    }),
     ...(MODULES[mi]?.quiz ? { quiz: buildQuiz(MODULES[mi].quiz as QuizInput, true) } : {}),
   })) as Course['curriculum']
 

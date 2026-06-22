@@ -2,7 +2,7 @@ import type { Metadata } from 'next'
 
 import Link from 'next/link'
 import { notFound, redirect } from 'next/navigation'
-import { ArrowLeft, ArrowRight, Check, HelpCircle, Lock } from 'lucide-react'
+import { ArrowLeft, ArrowRight, Check, HelpCircle, Lock, Wrench } from 'lucide-react'
 import React from 'react'
 
 import type { Course } from '@/payload-types'
@@ -367,6 +367,18 @@ export default async function LearnCoursePage({ params, searchParams }: Args) {
                     This lesson doesn&apos;t have content yet.
                   </p>
                 )
+              )}
+
+              {active.lesson.tryIt && (
+                <div className="mt-8 rounded-xl border border-primary/30 bg-primary/5 p-5">
+                  <div className="flex items-center gap-2 text-sm font-medium text-primary">
+                    <Wrench className="size-4" />
+                    Try it yourself
+                  </div>
+                  <p className="mt-2 whitespace-pre-line text-sm leading-relaxed text-foreground">
+                    {active.lesson.tryIt}
+                  </p>
+                </div>
               )}
 
               <div className="mt-10 flex flex-wrap items-center justify-between gap-4 border-t border-border pt-6">

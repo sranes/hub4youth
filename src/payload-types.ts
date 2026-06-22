@@ -830,6 +830,10 @@ export interface Course {
                 [k: string]: unknown;
               } | null;
               /**
+               * Optional hands-on exercise shown in a highlighted box at the end of the lesson.
+               */
+              tryIt?: string | null;
+              /**
                * Optional video — paste a YouTube/Vimeo link or a direct .mp4 URL.
                */
               videoUrl?: string | null;
@@ -1544,6 +1548,7 @@ export interface CoursesSelect<T extends boolean = true> {
           | {
               lesson?: T;
               content?: T;
+              tryIt?: T;
               videoUrl?: T;
               preview?: T;
               id?: T;

@@ -214,6 +214,15 @@ export const Courses: CollectionConfig = {
                       },
                     },
                     {
+                      name: 'tryIt',
+                      type: 'textarea',
+                      label: 'Try it yourself',
+                      admin: {
+                        description:
+                          'Optional hands-on exercise shown in a highlighted box at the end of the lesson.',
+                      },
+                    },
+                    {
                       name: 'videoUrl',
                       type: 'text',
                       admin: {

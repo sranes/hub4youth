@@ -64,6 +64,8 @@ export type LessonContent = {
   points: string[]
   example?: string
   takeaway: string
+  /** Optional hands-on exercise, shown in a highlighted box in the player. */
+  tryIt?: string
 }
 
 export function buildLessonState(c: LessonContent) {
@@ -1465,7 +1467,7 @@ export async function applyLessonContent(payload: Payload, req?: PayloadRequest)
           const c = data.lessons[l.lesson]
           if (!c) return l
           updated += 1
-          return { ...l, content: buildLessonState(c) }
+          return { ...l, content: buildLessonState(c), ...(c.tryIt ? { tryIt: c.tryIt } : {}) }
         }),
         ...(quizInput ? { quiz: buildQuiz(quizInput, true) } : {}),
       }
