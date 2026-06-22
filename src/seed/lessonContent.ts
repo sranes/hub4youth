@@ -100,7 +100,21 @@ export type QuizInput = {
   questions: QuizQuestionInput[]
 }
 
-function buildQuiz(q: QuizInput, defaultRequired: boolean) {
+/** Build a simple multi-paragraph rich-text doc (used for course overviews). */
+export function buildOverview(paragraphs: string[]) {
+  return {
+    root: {
+      children: paragraphs.map(para),
+      direction: 'ltr',
+      format: '',
+      indent: 0,
+      type: 'root',
+      version: 1,
+    },
+  }
+}
+
+export function buildQuiz(q: QuizInput, defaultRequired: boolean) {
   return {
     required: q.required ?? defaultRequired,
     passMark: q.passMark ?? 60,

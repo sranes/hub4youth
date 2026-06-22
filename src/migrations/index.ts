@@ -4,6 +4,7 @@ import * as migration_20260621_085446_add_student_phone_and_2fa from './20260621
 import * as migration_20260621_100000_add_quizzes from './20260621_100000_add_quizzes';
 import * as migration_20260621_120000_seed_lesson_content from './20260621_120000_seed_lesson_content';
 import * as migration_20260621_140000_enrich_course_content from './20260621_140000_enrich_course_content';
+import * as migration_20260621_160000_add_mcp_course from './20260621_160000_add_mcp_course';
 
 export const migrations = [
   {
@@ -35,5 +36,10 @@ export const migrations = [
     up: migration_20260621_140000_enrich_course_content.up,
     down: migration_20260621_140000_enrich_course_content.down,
     name: '20260621_140000_enrich_course_content',
+  },
+  {
+    up: migration_20260621_160000_add_mcp_course.up,
+    down: migration_20260621_160000_add_mcp_course.down,
+    name: '20260621_160000_add_mcp_course',
   },
 ];
